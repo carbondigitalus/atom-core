@@ -27,6 +27,7 @@ A tiny, framework-native **JSX runtime + DOM renderer**. No React dependency. Us
   - Global `JSX` namespace with permissive `IntrinsicElements`
 
 > **Not implemented (yet):**
+>
 > - Function/class components (only intrinsic elements render)
 > - Reconciliation/diffing (each `render` clears the container)
 > - SSR/hydration
@@ -42,7 +43,7 @@ Local development (consuming source from `/src`):
 
 ```bash
 # inside the repo
-pnpm install
+npm install
 ```
 
 When you publish a build, consumers will install from npm and import from `@atomjs/core`.
@@ -52,10 +53,13 @@ When you publish a build, consumers will install from npm and import from `@atom
 ## Quick start (example app)
 
 `examples/basic/index.html`
+
 ```html
 <!doctype html>
 <html>
-  <head><title>AtomJS Test</title></head>
+  <head>
+    <title>AtomJS Test</title>
+  </head>
   <body>
     <div id="root"></div>
     <script type="module" src="./main.tsx"></script>
@@ -64,6 +68,7 @@ When you publish a build, consumers will install from npm and import from `@atom
 ```
 
 `examples/basic/main.tsx`
+
 ```tsx
 import { render } from '@atomjs/core';
 
@@ -83,7 +88,7 @@ Run with Vite (dev):
 
 ```bash
 # from examples/basic/
-pnpm vite
+npm vite
 ```
 
 ---
@@ -91,6 +96,7 @@ pnpm vite
 ## TypeScript configuration
 
 **Root `tsconfig.json` (excerpt)**
+
 ```json
 {
   "compilerOptions": {
@@ -120,6 +126,7 @@ pnpm vite
 ```
 
 **Example `tsconfig.json`**
+
 ```json
 {
   "extends": "../../tsconfig.json",
@@ -149,6 +156,7 @@ pnpm vite
 ## Vite configuration (example)
 
 `examples/basic/vite.config.ts`
+
 ```ts
 import { defineConfig } from 'vite';
 
@@ -170,12 +178,14 @@ export default defineConfig({
 ## API
 
 ### `render(element: Children, container: HTMLElement): void`
+
 Mounts the given JSX tree into the DOM.
 
 - Clears `container.innerHTML` first (no diffing yet).
 - Converts the tree to DOM via the internal `createDOMNode`.
 
 ### JSX runtime (automatic)
+
 Imported implicitly by the compiler using `jsxImportSource: "@atomjs/core"`.
 
 - Production: `@atomjs/core/jsx-runtime` exports `jsx`, `jsxs`, `Fragment`
@@ -185,10 +195,12 @@ Imported implicitly by the compiler using `jsxImportSource: "@atomjs/core"`.
 **Do not** import `jsx` manually; just write JSX.
 
 ### Props & events
+
 - Props whose keys start with `on` (e.g. `onClick`) are added as event listeners.
 - Other props become attributes: `setAttribute(key, String(value))`
 
 ### Children
+
 - Arrays and nested arrays are flattened.
 - `null`, `undefined`, `false` are skipped.
 - `<Fragment>...</Fragment>` or `<>...</>` groups children without introducing a DOM element.
@@ -206,7 +218,9 @@ declare global {
       [elem: string]: Record<string, unknown>;
     }
     type Element = import('@atomjs/core/utils/interfaces/VNode').VNode<any>;
-    interface ElementChildrenAttribute { children: {}; }
+    interface ElementChildrenAttribute {
+      children: {};
+    }
   }
 }
 export {};
@@ -221,9 +235,9 @@ As the renderer matures, we’ll tighten `IntrinsicElements` with HTML/SVG attri
 From the repo root:
 
 ```bash
-pnpm dev                 # Vite dev server (example)
-pnpm lint                # ESLint + type-aware rules
-pnpm build               # tsc → dist (emits runtime entries)
+npm dev                 # Vite dev server (example)
+npm lint                # ESLint + type-aware rules
+npm build               # tsc → dist (emits runtime entries)
 ```
 
 Build output includes:
@@ -241,6 +255,7 @@ dist/runtime/jsx-dev-runtime.(js|d.ts)
 Flat config with type-aware rules. We enable the **Project Service** so each file uses the nearest `tsconfig.json` (source vs examples):
 
 `eslint.config.js` (excerpt)
+
 ```js
 import tsParser from '@typescript-eslint/parser';
 import typescriptEslint from '@typescript-eslint/eslint-plugin';
@@ -254,7 +269,7 @@ export default [
     languageOptions: {
       parser: tsParser,
       parserOptions: {
-        projectService: true,     // <- important
+        projectService: true, // <- important
         tsconfigRootDir: import.meta.dirname,
         sourceType: 'module'
       }
@@ -303,8 +318,8 @@ export default [
 PRs welcome! Please run:
 
 ```bash
-pnpm lint
-pnpm build
+npm lint
+npm build
 ```
 
 and include a focused reproduction when changing runtime/renderer behavior.
