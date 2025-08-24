@@ -1,18 +1,26 @@
 {
   "compilerOptions": {
+    "target": "ES2020",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "strict": true,
+    "lib": ["DOM", "ES2020"],
+    "sourceMap": true,
     "declaration": true,
     "declarationMap": true,
-    "jsx": "react-jsx",
-    "jsxImportSource": "atomjs",
-    "lib": ["DOM", "ES2020"],
-    "module": "ESNext",
-    "moduleResolution": "node",
     "outDir": "./dist",
-    "rootDir": "./src",
-    "sourceMap": true,
-    "strict": true,
-    "target": "ES2020"
+
+    "jsx": "react-jsx",
+    "jsxImportSource": "@atomjs/core",
+
+    "baseUrl": ".",
+    "paths": {
+      "@atomjs/core": ["./src"],
+      "@atomjs/core/*": ["./src/*"],
+      "@atomjs/core/jsx-runtime": ["./src/runtime/jsx-runtime.ts"],
+      "@atomjs/core/jsx-dev-runtime": ["./src/runtime/jsx-dev-runtime.ts"]
+    }
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "examples/**/*"],
   "exclude": ["node_modules", "dist", "vite.config.ts"]
 }
