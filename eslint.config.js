@@ -5,57 +5,42 @@ import prettierConfig from 'eslint-config-prettier';
 import prettier from 'eslint-plugin-prettier';
 
 export default [
-  {
-    ignores: ['dist/**', 'node_modules/**', '.eslintrc.js']
-  },
+  { ignores: ['dist/**', 'node_modules/**', 'eslint.config.js'] },
+
   // TypeScript files
   {
     files: ['**/*.ts', '**/*.tsx'],
     languageOptions: {
       parser: tsParser,
       parserOptions: {
-        project: ['./tsconfig.json'],
+        // 👇 Let the parser choose the nearest tsconfig for each file
+        projectService: true,
         tsconfigRootDir: import.meta.dirname,
         sourceType: 'module'
       },
-      globals: {
-        node: true,
-        jest: true
-      }
+      globals: { node: true, jest: true }
     },
-    plugins: {
-      '@typescript-eslint': typescriptEslint,
-      prettier
-    },
+    plugins: { '@typescript-eslint': typescriptEslint, prettier },
     rules: {
-      // TypeScript ESLint recommended rules
       ...typescriptEslint.configs.recommended.rules,
       ...typescriptEslint.configs['recommended-requiring-type-checking'].rules,
-
-      // Prettier integration
       ...prettierConfig.rules,
       'prettier/prettier': 'error',
-
-      // Your custom rules
       '@typescript-eslint/interface-name-prefix': 'off',
       '@typescript-eslint/explicit-function-return-type': 'off',
       '@typescript-eslint/explicit-module-boundary-types': 'off',
       '@typescript-eslint/no-explicit-any': 'off'
     }
   },
+
   // JavaScript files
   {
     files: ['**/*.js'],
     languageOptions: {
       sourceType: 'module',
-      globals: {
-        node: true,
-        jest: true
-      }
+      globals: { node: true, jest: true }
     },
-    plugins: {
-      prettier
-    },
+    plugins: { prettier },
     rules: {
       ...prettierConfig.rules,
       'prettier/prettier': 'error'
