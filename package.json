@@ -4,9 +4,11 @@
   "description": "The AtomJS Core project.",
   "scripts": {
     "build": "tsc",
-    "dev": "tsc --watch",
-    "lint": "eslint src --ext .ts,.tsx",
-    "format": "prettier --write src"
+    "code:lint": "eslint src --ext .ts,.tsx",
+    "code:format": "prettier --write src",
+    "preview": "vite preview",
+    "start:dev": "vite",
+    "start:dev:types": "tsc --watch --noEmit"
   },
   "devDependencies": {
     "@types/node": "^24.3.0",
