@@ -29,10 +29,37 @@
   "bugs": {
     "url": "https://github.com/carbondigitalus/atom-core/issues"
   },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./jsx-runtime": {
+      "types": "./dist/runtime/jsx-runtime.d.ts",
+      "default": "./dist/runtime/jsx-runtime.js"
+    },
+    "./jsx-dev-runtime": {
+      "types": "./dist/runtime/jsx-dev-runtime.d.ts",
+      "default": "./dist/runtime/jsx-dev-runtime.js"
+    }
+  },
   "homepage": "https://github.com/carbondigitalus/atom-core#readme",
   "license": "ISC",
+  "main": "dist/index.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/carbondigitalus/atom-core.git"
+  },
+  "type": "module",
+  "types": "dist/index.d.ts",
+  "typesVersions": {
+    "*": {
+      "jsx-runtime": [
+        "dist/runtime/jsx-runtime.d.ts"
+      ],
+      "jsx-dev-runtime": [
+        "dist/runtime/jsx-dev-runtime.d.ts"
+      ]
+    }
   }
 }
