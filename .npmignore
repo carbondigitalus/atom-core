@@ -1,8 +1,24 @@
+# Project Files
 src/
+
+# Usage Examples
 examples/
+
+# Root Project Files
 vite.config.ts
 tsconfig.json
 .eslintrc.*
 .prettierrc
 *.log
+
+# OS Files
 .DS_Store
+
+# Test Files
+jest.config.ts
+test/
+*.test.ts
+coverage/
+allure-results/
+allure-report/
+reports/
