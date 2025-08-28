@@ -1,0 +1,8 @@
+src/
+examples/
+vite.config.ts
+tsconfig.json
+.eslintrc.*
+.prettierrc
+*.log
+.DS_Store
