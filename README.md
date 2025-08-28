@@ -1,331 +1,365 @@
-# @atomjs/core
+# AtomJS Core
 
-A tiny, framework-native **JSX runtime + DOM renderer**. No React dependency. Uses the **automatic JSX runtime** (`jsx: "react-jsx"`) with `jsxImportSource: "@atomjs/core"`.
+> Build with Atom - The fundamental building blocks of UI
 
-> **Status:** MVP (v0.1.0-alpha). Good for experimentation and internal examples.
+AtomJS is a class-based React alternative that combines the best aspects of React's component model with Vue's simplicity, built from the ground up with TypeScript.
 
----
+## Current Status
 
-## What works today
+**Phase**: Core Runtime Development  
+**Version**: 0.1.0 (Pre-release)
 
-- **Automatic JSX runtime** (React-17 style)
-  - `@atomjs/core/jsx-runtime`: `jsx`, `jsxs`, `Fragment`
-  - `@atomjs/core/jsx-dev-runtime`: `jsxDEV`, `Fragment` (+ dev metadata)
-  - Proper `key` handling
-- **DOM renderer**
-  - `render(element: Children, container: HTMLElement)`
-  - Intrinsic elements (string tags) create real DOM nodes
-  - Props:
-    - `on*` props become event listeners (`onClick`, `onInput`, …)
-    - Non-event props become attributes (stringified)
-  - Children:
-    - Arrays and nested arrays are flattened
-    - `null`, `undefined`, and `false` are skipped
-    - `Fragment` works
-- **Types**
-  - `VNode`, `ElementType`, `Props`, `Key`, `Child`, `Children`
-  - Global `JSX` namespace with permissive `IntrinsicElements`
+### What's Built
 
-> **Not implemented (yet):**
->
-> - Function/class components (only intrinsic elements render)
-> - Reconciliation/diffing (each `render` clears the container)
-> - SSR/hydration
-> - Keyed lists, event delegation
-> - Attribute/prop normalization (`className`, style objects, boolean attrs)
-> - Tight HTML/SVG intrinsic typings (currently permissive)
+- ✅ **Virtual DOM Engine** - Lightweight object representation of UI
+- ✅ **JSX Runtime** - Full JSX transformation support (`jsx`, `jsxs`, `jsxDEV`)
+- ✅ **Element Creation** - `createElement` with proper TypeScript types
+- ✅ **DOM Rendering** - Mount virtual elements to real DOM
+- ✅ **Event Handling** - onClick, onInput, and other DOM events
+- ✅ **Fragment Support** - Render multiple elements without wrapper
+- ✅ **Development Tools** - Source maps, TypeScript integration
 
----
+### What's Missing
 
-## Install
+- ⏳ **Class Components** - Stateful components with lifecycle methods
+- ⏳ **State Management** - setState and re-rendering logic
+- ⏳ **Computed Properties** - Vue-style reactive computations
+- ⏳ **Watchers** - Explicit side effect handling
+- ⏳ **Component Library** - Pre-built UI components
+- ⏳ **Build Tools** - CLI, bundling, optimization
 
-Local development (consuming source from `/src`):
+## Architecture
 
-```bash
-# inside the repo
-npm install
+### Core Modules
+
+```
+src/
+├── core/
+│   ├── createElement.ts    # Virtual DOM creation
+│   ├── render.ts          # DOM mounting
+│   └── createDOMNode.ts   # DOM manipulation utilities
+├── runtime/
+│   ├── jsx-runtime.ts     # JSX transformation (jsx, jsxs)
+│   └── jsx-dev-runtime.ts # Development JSX with debugging
+└── utils/
+    ├── interfaces/        # TypeScript interfaces (VNode)
+    └── types/            # Type definitions (Children, Props, etc.)
 ```
 
-When you publish a build, consumers will install from npm and import from `@atomjs/core`.
+### Type System
 
----
+**VNode** - Virtual DOM node structure
 
-## Quick start (example app)
-
-`examples/basic/index.html`
-
-```html
-<!doctype html>
-<html>
-  <head>
-    <title>AtomJS Test</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="./main.tsx"></script>
-  </body>
-</html>
+```typescript
+interface VNode<P = any> {
+  readonly type: ElementType<P>;
+  readonly props: P & { key?: Key; children?: Children };
+}
 ```
 
-`examples/basic/main.tsx`
+**Children** - Flexible child element types
 
-```tsx
+```typescript
+type Children = Child | Child[];
+type Child = VNode<any> | PrimitiveChild | boolean | null | undefined;
+```
+
+## Usage
+
+### Basic Example
+
+```typescript
 import { render } from '@atomjs/core';
 
+// JSX automatically transforms to createElement calls
 const app = (
   <div>
     <h1>Hello AtomJS!</h1>
-    <p>This is a test of our framework</p>
-    <button onClick={() => alert('AtomJS works!')}>Click me!</button>
+    <button onClick={() => alert('Works!')}>
+      Click me
+    </button>
   </div>
 );
 
-const root = document.getElementById('root');
-if (root) render(app, root);
+// Mount to DOM
+render(app, document.getElementById('root'));
 ```
 
-Run with Vite (dev):
+### Manual Element Creation
+
+```typescript
+import { createElement, render } from '@atomjs/core';
+
+const element = createElement(
+  'div',
+  { className: 'app' },
+  createElement('h1', null, 'Hello World'),
+  createElement('p', null, 'Built with AtomJS')
+);
+
+render(element, document.getElementById('root'));
+```
+
+## Development Setup
+
+### Prerequisites
+
+- Node.js v18+
+- TypeScript 5.0+
+
+### Installation
 
 ```bash
-# from examples/basic/
-npm vite
+git clone <repository>
+cd atomjs
+npm install
 ```
 
----
-
-## TypeScript configuration
-
-**Root `tsconfig.json` (excerpt)**
-
-```json
-{
-  "compilerOptions": {
-    "target": "ES2020",
-    "module": "ESNext",
-    "moduleResolution": "Bundler",
-    "strict": true,
-    "lib": ["DOM", "ES2020"],
-    "sourceMap": true,
-    "declaration": true,
-    "declarationMap": true,
-    "outDir": "./dist",
-
-    "jsx": "react-jsx",
-    "jsxImportSource": "@atomjs/core",
-
-    "baseUrl": ".",
-    "paths": {
-      "@atomjs/core": ["./src"],
-      "@atomjs/core/*": ["./src/*"],
-      "@atomjs/core/jsx-runtime": ["./src/runtime/jsx-runtime.ts"],
-      "@atomjs/core/jsx-dev-runtime": ["./src/runtime/jsx-dev-runtime.ts"]
-    }
-  },
-  "include": ["src/**/*", "examples/**/*"]
-}
-```
-
-**Example `tsconfig.json`**
-
-```json
-{
-  "extends": "../../tsconfig.json",
-  "compilerOptions": {
-    "jsx": "react-jsx",
-    "jsxImportSource": "@atomjs/core",
-    "moduleResolution": "Bundler",
-    "isolatedModules": true,
-    "lib": ["ES2020", "DOM"],
-    "baseUrl": ".",
-    "paths": {
-      "@atomjs/core": ["../../src"],
-      "@atomjs/core/*": ["../../src/*"],
-      "@atomjs/core/jsx-runtime": ["../../src/runtime/jsx-runtime.ts"],
-      "@atomjs/core/jsx-dev-runtime": ["../../src/runtime/jsx-dev-runtime.ts"]
-    }
-  },
-  "include": ["./**/*"]
-}
-```
-
-> The example maps `@atomjs/core` to `/src` so you can develop without publishing.  
-> After publishing, you can remove the `paths` and keep `jsxImportSource: "@atomjs/core"`.
-
----
-
-## Vite configuration (example)
-
-`examples/basic/vite.config.ts`
-
-```ts
-import { defineConfig } from 'vite';
-
-export default defineConfig({
-  esbuild: {
-    jsx: 'automatic',
-    jsxImportSource: '@atomjs/core'
-  },
-  resolve: {
-    alias: {
-      '@atomjs/core': new URL('../../src', import.meta.url).pathname
-    }
-  }
-});
-```
-
----
-
-## API
-
-### `render(element: Children, container: HTMLElement): void`
-
-Mounts the given JSX tree into the DOM.
-
-- Clears `container.innerHTML` first (no diffing yet).
-- Converts the tree to DOM via the internal `createDOMNode`.
-
-### JSX runtime (automatic)
-
-Imported implicitly by the compiler using `jsxImportSource: "@atomjs/core"`.
-
-- Production: `@atomjs/core/jsx-runtime` exports `jsx`, `jsxs`, `Fragment`
-- Dev: `@atomjs/core/jsx-dev-runtime` exports `jsxDEV`, `Fragment`  
-  (attaches `__source`/`__self` metadata)
-
-**Do not** import `jsx` manually; just write JSX.
-
-### Props & events
-
-- Props whose keys start with `on` (e.g. `onClick`) are added as event listeners.
-- Other props become attributes: `setAttribute(key, String(value))`
-
-### Children
-
-- Arrays and nested arrays are flattened.
-- `null`, `undefined`, `false` are skipped.
-- `<Fragment>...</Fragment>` or `<>...</>` groups children without introducing a DOM element.
-
----
-
-## Global JSX types
-
-We provide permissive global JSX typings so `.tsx` compiles without React:
-
-```ts
-declare global {
-  namespace JSX {
-    interface IntrinsicElements {
-      [elem: string]: Record<string, unknown>;
-    }
-    type Element = import('@atomjs/core/utils/interfaces/VNode').VNode<any>;
-    interface ElementChildrenAttribute {
-      children: {};
-    }
-  }
-}
-export {};
-```
-
-As the renderer matures, we’ll tighten `IntrinsicElements` with HTML/SVG attributes.
-
----
-
-## Scripts
-
-From the repo root:
+### Available Scripts
 
 ```bash
-npm dev                 # Vite dev server (example)
-npm lint                # ESLint + type-aware rules
-npm build               # tsc → dist (emits runtime entries)
+npm run start:dev        # Vite development server
+npm run start:dev:types  # TypeScript type checking (watch mode)
+npm run build           # Build for production
+npm run code:lint       # ESLint code linting
+npm run code:format     # Prettier code formatting
 ```
 
-Build output includes:
+### Project Structure
 
 ```
-dist/index.(js|d.ts)
-dist/runtime/jsx-runtime.(js|d.ts)
-dist/runtime/jsx-dev-runtime.(js|d.ts)
+atomjs/
+├── src/              # Source code
+├── examples/         # Test applications
+├── dist/            # Built output
+└── vite.config.ts   # Vite configuration
 ```
 
----
+## Design Philosophy
 
-## ESLint
+**Class-Based Components** - Predictable, object-oriented approach without hooks complexity
 
-Flat config with type-aware rules. We enable the **Project Service** so each file uses the nearest `tsconfig.json` (source vs examples):
+**Vue-Inspired Reactivity** - Computed properties and watchers for clear side effect management
 
-`eslint.config.js` (excerpt)
+**React-Compatible JSX** - Familiar syntax with improved underlying architecture
 
-```js
-import tsParser from '@typescript-eslint/parser';
-import typescriptEslint from '@typescript-eslint/eslint-plugin';
-import prettierConfig from 'eslint-config-prettier';
-import prettier from 'eslint-plugin-prettier';
+**Enterprise-Ready** - Stable APIs, comprehensive TypeScript support, minimal breaking changes
 
-export default [
-  { ignores: ['dist/**', 'node_modules/**'] },
-  {
-    files: ['**/*.ts', '**/*.tsx'],
-    languageOptions: {
-      parser: tsParser,
-      parserOptions: {
-        projectService: true, // <- important
-        tsconfigRootDir: import.meta.dirname,
-        sourceType: 'module'
-      }
-    },
-    plugins: { '@typescript-eslint': typescriptEslint, prettier },
-    rules: {
-      ...typescriptEslint.configs.recommended.rules,
-      ...typescriptEslint.configs['recommended-requiring-type-checking'].rules,
-      ...prettierConfig.rules,
-      'prettier/prettier': 'error'
-    }
-  }
-];
-```
+**Developer Experience** - Fast builds, excellent debugging, clear error messages
 
----
+## Detailed Roadmap
 
-## Troubleshooting
+### Phase 2: Component System (Q3-Q4 2025)
 
-- **TS2875: requires module path `…/jsx-runtime` to exist**  
-  Ensure `jsxImportSource: "@atomjs/core"` and that your tsconfig `paths` map:
-  `@atomjs/core/jsx-runtime` → `src/runtime/jsx-runtime.ts`  
-  `@atomjs/core/jsx-dev-runtime` → `src/runtime/jsx-dev-runtime.ts`
+**Foundation: Stateful Class Components**
 
-- **ESLint `no-unsafe-call` on `render(...)`**  
-  ESLint couldn’t resolve types for `@atomjs/core`. Use `projectService: true` (above) or include both `tsconfig.json` files in `parserOptions.project`.
+**2.1 Base Component Class (4-6 weeks)**
 
-- **“Cannot find module '@atomjs/core'” in the example**  
-  Add `paths` in the example tsconfig mapping `@atomjs/core` to `../../src`, or use the published package.
+- `Component` base class with constructor, props, and state
+- Lifecycle methods: `componentDidMount`, `componentDidUpdate`, `componentWillUnmount`
+- Abstract `render()` method requirement
+- Instance method binding and `this` context management
+- Props validation and TypeScript generic support
 
----
+**2.2 State Management (3-4 weeks)**
 
-## Roadmap
+- `setState()` implementation with batching
+- State diffing and selective re-rendering
+- Async state updates and callback support
+- State mutation detection and warnings
+- Performance optimizations for large state objects
 
-- Function components → evaluate to VNode, then render
-- Reconciliation (diff props/children; keyed lists)
-- Event delegation
-- Attribute normalization (`className`, style objects, boolean attrs)
-- Tight HTML/SVG intrinsic typings
-- SSR/hydration experiments
+**2.3 Vue-Inspired Reactivity (6-8 weeks)**
 
----
+- `@computed` decorator for derived properties
+- Automatic dependency tracking for computed values
+- `@watch` decorator for side effect handling
+- Reactive property getters and setters
+- Invalidation and re-computation strategies
+
+**2.4 Component Lifecycle Enhancement (2-3 weeks)**
+
+- Error boundaries with `componentDidCatch`
+- `shouldComponentUpdate` for manual optimization
+- `getSnapshotBeforeUpdate` for DOM measurements
+- Development mode lifecycle warnings and debugging
+
+**Milestone: Complete counter app with class component, state, and computed properties**
+
+### Phase 3: Developer Experience & Tooling (Q3-Q4 2025)
+
+**Foundation: Professional Development Workflow**
+
+**3.1 AtomJS CLI (8-10 weeks)**
+
+- Project scaffolding: `atomjs create my-app`
+- Template system: basic, with-router, enterprise
+- Component generation: `atomjs generate component UserCard`
+- Build optimization and bundling
+- Development server with hot reload
+- Production builds with tree-shaking and minification
+
+**3.2 Browser Development Tools (10-12 weeks)**
+
+- Chrome/Firefox extension for AtomJS debugging
+- Component tree visualization and inspection
+- State and props inspection with live editing
+- Performance profiler for render cycles
+- Time-travel debugging for state changes
+- Integration with React DevTools protocol
+
+**3.3 Build System & Optimization (4-6 weeks)**
+
+- Fast refresh implementation for instant updates
+- Source map generation for production debugging
+- Bundle analysis and size optimization
+- CSS-in-JS support and extraction
+- Asset optimization and CDN preparation
+- TypeScript declaration bundling
+
+**3.4 Testing Framework (6-8 weeks)**
+
+- Component testing utilities similar to React Testing Library
+- Jest integration and custom matchers
+- Snapshot testing for components
+- Mock utilities for lifecycle methods
+- Performance testing and benchmarking tools
+
+**Milestone: Full-stack development workflow comparable to Create React App**
+
+### Phase 4: Core Ecosystem (Q4-Q1 2025-2026)
+
+**Foundation: Production-Ready Platform**
+
+**4.1 UI Component Library - AtomUI (12-16 weeks)**
+
+- 40+ production-ready components (Button, Input, Modal, etc.)
+- Consistent design system with theme support
+- Accessibility compliance (ARIA, keyboard navigation)
+- Comprehensive Storybook documentation
+- Dark mode and customization APIs
+- Performance-optimized implementations
+
+**4.2 Routing System - AtomRouter (6-8 weeks)**
+
+- File-based routing system inspired by Next.js
+- Nested routes and layout components
+- Dynamic route parameters and query handling
+- Route guards and authentication integration
+- Code splitting and lazy loading
+- Server-side rendering preparation
+
+**4.3 State Management Library - AtomState (8-10 weeks)**
+
+- Global state management with class-based stores
+- Computed properties across components
+- Action/mutation pattern for predictable updates
+- DevTools integration for state inspection
+- Middleware system for logging and persistence
+- TypeScript-first API design
+
+**4.4 Documentation Platform - AtomDocs (10-12 weeks)**
+
+- Auto-generated documentation from TypeScript comments
+- Interactive component playground
+- Code examples with live editing
+- API reference with search and filtering
+- Tutorial and guide system
+- Community contribution workflow
+
+**Milestone: Complete development platform competitive with Vue/React ecosystems**
+
+### Phase 5: Advanced Features & Scaling (Q1-Q2 2026)
+
+**Foundation: Enterprise and Performance**
+
+**5.1 Server-Side Rendering (10-12 weeks)**
+
+- Node.js SSR runtime for AtomJS components
+- Hydration system for client-side takeover
+- Static site generation capabilities
+- Streaming SSR for improved TTFB
+- SEO optimization and meta tag management
+- Integration with existing Node.js frameworks
+
+**5.2 Performance & Optimization (8-10 weeks)**
+
+- Virtual scrolling for large lists
+- Memoization system for expensive computations
+- Bundle splitting and progressive loading
+- Web Workers integration for background processing
+- Memory leak detection and prevention
+- Performance monitoring and analytics
+
+**5.3 Advanced Developer Tools (6-8 weeks)**
+
+- Visual component editor with drag-and-drop
+- Performance profiler with flame graphs
+- Bundle analyzer with dependency visualization
+- Accessibility auditing tools
+- Automated testing generation
+- Code migration tools from React/Vue
+
+**Milestone: Enterprise-ready framework with advanced performance characteristics**
+
+### Phase 6: Ecosystem & Community (Q2-Q3 2026 And Beyond)
+
+**Foundation: Sustainable Open Source Project**
+
+**6.1 Figma Integration Suite (12-16 weeks)**
+
+- Design token synchronization
+- Component generation from Figma designs
+- Design system maintenance tools
+- Designer-developer handoff automation
+- Version control for design changes
+- Real-time collaboration features
+
+**6.2 AtomCloud Hosting Platform (16-20 weeks)**
+
+- One-click deployment for AtomJS applications
+- Edge computing and CDN integration
+- Serverless functions compatible with AtomJS
+- Database integration and ORM
+- Authentication and user management
+- Analytics and monitoring dashboard
+
+**6.3 Community & Marketplace (8-12 weeks)**
+
+- Component marketplace for sharing AtomUI extensions
+- Plugin system for third-party integrations
+- Community templates and starter kits
+- Certification program for AtomJS developers
+- Conference and meetup organization
+- Open source contribution guidelines
+
+**Success Metrics by Phase:**
+
+- Phase 2: 1,000+ GitHub stars, basic app demos
+- Phase 3: 10,000+ weekly npm downloads, CLI adoption
+- Phase 4: 50+ production websites, enterprise pilots
+- Phase 5: Performance parity with React, major company adoption
+- Phase 6: Self-sustaining community, profitable hosting platform
+
+**Risk Mitigation:**
+
+- Maintain React compatibility layer throughout development
+- Regular performance benchmarking against competitors
+- Community feedback integration at each phase
+- Enterprise customer development partnerships
+- Fallback plans for feature delays or technical challenges
 
 ## Contributing
 
-PRs welcome! Please run:
+AtomJS is in active development. The core runtime is functional but the component system is not yet implemented.
 
-```bash
-npm lint
-npm build
-```
+Current development priorities:
 
-and include a focused reproduction when changing runtime/renderer behavior.
-
----
+1. Component class with lifecycle methods
+2. State management and re-rendering
+3. Basic example applications
+4. Test suite and CI/CD
 
 ## License
 
-ISC © Carbon Digital.
+ISC - See LICENSE file for details
