@@ -1,27 +1,26 @@
 {
   "compilerOptions": {
-    "target": "ES2020",
-    "module": "ESNext",
-    "moduleResolution": "Bundler",
-    "strict": true,
-    "lib": ["DOM", "ES2020"],
-    "sourceMap": true,
+    "baseUrl": ".",
     "declaration": true,
     "declarationMap": true,
-    "outDir": "./dist",
-    "rootDir": "./src",
-
+    "esModuleInterop": true,
     "jsx": "react-jsx",
     "jsxImportSource": "@atomdev/core",
-
-    "baseUrl": ".",
+    "lib": ["DOM", "ES2020"],
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "outDir": "./dist",
     "paths": {
       "@atomdev/core": ["./src"],
       "@atomdev/core/*": ["./src/*"],
       "@atomdev/core/jsx-runtime": ["./src/runtime/jsx-runtime.ts"],
       "@atomdev/core/jsx-dev-runtime": ["./src/runtime/jsx-dev-runtime.ts"]
-    }
+    },
+    "sourceMap": true,
+    "strict": true,
+    "target": "ES2020",
+    "typeRoots": ["./types", "./node_modules/@types"]
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "test/**/*", "jest.config.ts"],
   "exclude": ["node_modules", "dist", "vite.config.ts", "examples/**/*"]
 }

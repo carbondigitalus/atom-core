@@ -1,23 +1,33 @@
 {
   "name": "@atomdev/core",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "The AtomJS Core project.",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc --project tsconfig.build.json",
     "code:lint": "eslint src --ext .ts,.tsx",
     "code:format": "prettier --write src",
     "preview": "vite preview",
     "start:dev": "vite",
-    "start:dev:types": "tsc --watch --noEmit"
+    "start:dev:types": "tsc --watch --noEmit",
+    "test": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js",
+    "report:jest:generate": "npx allure generate reports-jest/data --clean -o reports-jest/report",
+    "report:jest:view": "npx allure open reports-jest/report"
   },
   "devDependencies": {
+    "@types/jest": "^30.0.0",
     "@types/node": "^24.3.0",
     "@typescript-eslint/eslint-plugin": "^8.40.0",
     "@typescript-eslint/parser": "^8.40.0",
+    "allure-commandline": "^2.34.1",
     "eslint": "^9.34.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.4",
+    "jest": "^30.1.1",
+    "jest-allure2-reporter": "^2.2.6",
+    "jest-environment-jsdom": "^30.1.1",
     "prettier": "^3.6.2",
+    "ts-jest": "^29.4.1",
+    "ts-node": "^10.9.2",
     "typescript": "^5.9.2",
     "vite": "^7.1.3"
   },

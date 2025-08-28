@@ -1,7 +1,7 @@
 // Custom Modules
 import { createElement } from '../core/createElement';
+import { collectChildren } from '../utils/functions/collectChildren';
 import { VNode } from '../utils/interfaces/VNode';
-import { Child } from '../utils/types/Child';
 import { Children } from '../utils/types/Children';
 import { ElementType } from '../utils/types/ElementType';
 import { Key } from '../utils/types/Key';
@@ -18,7 +18,6 @@ export function jsx<P = Props>(
   const src = (props ?? {}) as Props;
   const children = (src as { children?: Children }).children;
 
-  // Build props without `children`
   const rest = Object.fromEntries(
     Object.entries(src).filter(([k]) => k !== 'children')
   ) as P & Props;
@@ -28,28 +27,10 @@ export function jsx<P = Props>(
   if (children === undefined) {
     return createElement<P>(type, nextProps);
   }
-  return Array.isArray(children)
-    ? createElement<P>(type, nextProps, ...children)
-    : createElement<P>(type, nextProps, children);
-}
 
-// Helper: flatten children and remove falsey renderables (false|null|undefined)
-function collectChildren(
-  input: Children
-): Array<Exclude<Child, false | null | undefined | Child[]>> {
-  const out: Array<Exclude<Child, false | null | undefined | Child[]>> = [];
-
-  const enqueue = (c: Children): void => {
-    if (c == null || c === false) return;
-    if (Array.isArray(c)) {
-      for (const x of c) enqueue(x);
-      return;
-    }
-    out.push(c as Exclude<Child, false | null | undefined | Child[]>);
-  };
-
-  enqueue(input);
-  return out;
+  // ✅ flatten children before spreading
+  const flat = collectChildren(children);
+  return createElement<P>(type, nextProps, ...flat);
 }
 
 export function jsxs<P = Props>(

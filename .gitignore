@@ -15,3 +15,7 @@
 # Custom Sections
 .env*
 package-lock.json
+
+# Testing 
+reports-jest
+reports-webdriver
