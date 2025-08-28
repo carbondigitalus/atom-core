@@ -1,5 +1,5 @@
 {
-  "name": "@atomjs/core",
+  "name": "@atomdev/core",
   "version": "0.2.0",
   "description": "The AtomJS Core project.",
   "scripts": {
