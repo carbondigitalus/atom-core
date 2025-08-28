@@ -1,6 +1,5 @@
 // NPM Modules
 import type { Options } from '@wdio/types';
-import 'dotenv/config';
 
 export const config = {
   autoCompileOpts: {
@@ -41,8 +40,7 @@ export const config = {
         port: 8080,
         middleware: []
       }
-    ],
-    'devtools'
+    ]
   ],
   specs: ['./specs/**/*.spec.ts'],
   waitforTimeout: 10_000
