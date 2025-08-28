@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Button Component</title>
+    <style>
+      #primary {
+        padding: 10px 16px;
+        border: 0;
+        cursor: pointer;
+      }
+      #primary.active {
+        outline: 3px solid black;
+      }
+      #output {
+        margin-top: 12px;
+        font-family: sans-serif;
+      }
+    </style>
+  </head>
+  <body>
+    <button id="primary" aria-pressed="false">Click me</button>
+    <div id="output" aria-live="polite">idle</div>
+
+    <script>
+      const btn = document.getElementById('primary');
+      const out = document.getElementById('output');
+      btn.addEventListener('click', () => {
+        const next =
+          btn.getAttribute('aria-pressed') === 'true' ? 'false' : 'true';
+        btn.setAttribute('aria-pressed', next);
+        btn.classList.toggle('active');
+        out.textContent = next === 'true' ? 'clicked' : 'idle';
+      });
+    </script>
+  </body>
+</html>
