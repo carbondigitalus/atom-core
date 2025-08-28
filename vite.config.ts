@@ -1,16 +1,15 @@
-// NPM Modules
 import { defineConfig } from 'vite';
 
 export default defineConfig({
   build: {
     lib: {
       entry: 'src/index.ts',
-      name: 'AtomJS',
-      fileName: 'atomjs'
+      name: 'AtomDev',
+      fileName: 'atomdev'
     }
   },
   esbuild: {
     jsx: 'transform',
-    jsxFactory: 'AtomJS.createElement'
+    jsxFactory: 'AtomDev.createElement'
   }
 });
