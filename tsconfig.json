@@ -9,6 +9,7 @@
     "declaration": true,
     "declarationMap": true,
     "outDir": "./dist",
+    "rootDir": "./src",
 
     "jsx": "react-jsx",
     "jsxImportSource": "@atomjs/core",
@@ -21,6 +22,6 @@
       "@atomjs/core/jsx-dev-runtime": ["./src/runtime/jsx-dev-runtime.ts"]
     }
   },
-  "include": ["src/**/*", "examples/**/*"],
-  "exclude": ["node_modules", "dist", "vite.config.ts"]
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist", "vite.config.ts", "examples/**/*"]
 }
