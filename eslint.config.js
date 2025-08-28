@@ -40,6 +40,19 @@ export default [
     }
   },
 
+  // ✅ Type-aware linting for WDIO tests
+  {
+    files: ['test/browser/**/*.{ts,tsx}'],
+    languageOptions: {
+      parser: tsParser,
+      parserOptions: {
+        project: ['./test/browser/tsconfig.json'],
+        tsconfigRootDir: import.meta.dirname,
+        sourceType: 'module'
+      }
+    }
+  },
+
   // JavaScript files
   {
     files: ['**/*.js'],
