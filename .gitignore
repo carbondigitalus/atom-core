@@ -16,6 +16,8 @@
 .env*
 package-lock.json
 
-# Testing 
-reports-jest
-reports-webdriver
+# Testing - Jest, WebDriver
+reports/
+browser/dist/
+browser/.wdio-*
+browser/.tmp
