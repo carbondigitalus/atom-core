@@ -12,14 +12,14 @@
     "rootDir": "./src",
 
     "jsx": "react-jsx",
-    "jsxImportSource": "@atomjs/core",
+    "jsxImportSource": "@atomdev/core",
 
     "baseUrl": ".",
     "paths": {
-      "@atomjs/core": ["./src"],
-      "@atomjs/core/*": ["./src/*"],
-      "@atomjs/core/jsx-runtime": ["./src/runtime/jsx-runtime.ts"],
-      "@atomjs/core/jsx-dev-runtime": ["./src/runtime/jsx-dev-runtime.ts"]
+      "@atomdev/core": ["./src"],
+      "@atomdev/core/*": ["./src/*"],
+      "@atomdev/core/jsx-runtime": ["./src/runtime/jsx-runtime.ts"],
+      "@atomdev/core/jsx-dev-runtime": ["./src/runtime/jsx-dev-runtime.ts"]
     }
   },
   "include": ["src/**/*"],
