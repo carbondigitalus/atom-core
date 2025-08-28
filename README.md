@@ -6,8 +6,7 @@ AtomJS is a class-based React alternative that combines the best aspects of Reac
 
 ## Current Status
 
-**Phase**: Core Runtime Development  
-**Version**: 0.1.0 (Pre-release)
+**Phase**: Core Runtime Development
 
 ### What's Built
 
