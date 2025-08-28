@@ -7,11 +7,11 @@
     "code:lint": "eslint src --ext .ts,.tsx",
     "code:format": "prettier --write src",
     "preview": "vite preview",
+    "report:jest:generate": "npx allure generate reports-jest/data --clean -o reports-jest/report",
+    "report:jest:view": "npx allure open reports-jest/report",
     "start:dev": "vite",
     "start:dev:types": "tsc --watch --noEmit",
-    "test": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js",
-    "report:jest:generate": "npx allure generate reports-jest/data --clean -o reports-jest/report",
-    "report:jest:view": "npx allure open reports-jest/report"
+    "test:jest": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js"
   },
   "devDependencies": {
     "@types/jest": "^30.0.0",
