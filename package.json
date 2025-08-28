@@ -7,18 +7,29 @@
     "code:lint": "eslint src --ext .ts,.tsx",
     "code:format": "prettier --write src",
     "preview": "vite preview",
-    "report:jest:generate": "npx allure generate reports-jest/data --clean -o reports-jest/report",
-    "report:jest:view": "npx allure open reports-jest/report",
+    "report:browser:generate": "allure generate reports/webdriver/data --clean -o reports/webdriver/report",
+    "report:browser:view": "allure open reports/webdriver/report",
+    "report:unit:generate": "npx allure generate reports/jest/data --clean -o reports/jest/report",
+    "report:unit:view": "npx allure open reports/jest/report",
     "start:dev": "vite",
     "start:dev:types": "tsc --watch --noEmit",
-    "test:jest": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js"
+    "test:browser": "wdio run test/browser/wdio.conf.ts",
+    "test:browser:headful": "WDIO_HEADFUL=1 node -e \"process.exit(0)\" && wdio run test/browser/wdio.conf.ts",
+    "test:unit": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js"
   },
   "devDependencies": {
     "@types/jest": "^30.0.0",
     "@types/node": "^24.3.0",
     "@typescript-eslint/eslint-plugin": "^8.40.0",
     "@typescript-eslint/parser": "^8.40.0",
+    "@wdio/allure-reporter": "^9.19.2",
+    "@wdio/cli": "^9.19.2",
+    "@wdio/local-runner": "^9.19.2",
+    "@wdio/mocha-framework": "^9.19.2",
+    "@wdio/spec-reporter": "^9.19.2",
+    "@wdio/static-server-service": "^9.19.2",
     "allure-commandline": "^2.34.1",
+    "chromedriver": "^139.0.3",
     "eslint": "^9.34.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.4",
@@ -29,7 +40,8 @@
     "ts-jest": "^29.4.1",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.2",
-    "vite": "^7.1.3"
+    "vite": "^7.1.3",
+    "webdriverio": "^9.19.2"
   },
   "author": {
     "name": "Carbon Digital",
