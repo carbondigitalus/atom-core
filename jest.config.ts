@@ -11,7 +11,7 @@ const config: Config.InitialOptions = {
     [
       'jest-allure2-reporter',
       {
-        resultsDir: 'reports-jest/data'
+        resultsDir: 'reports/jest/data'
       }
     ]
   ]

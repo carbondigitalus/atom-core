@@ -1,9 +1,19 @@
+// Core Modules
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
 // NPM Modules
 import type { Options } from '@wdio/types';
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const fixturesDir = path.resolve(__dirname, 'fixtures');
+const distDir = path.resolve(process.cwd(), 'dist');
+
 export const config = {
   autoCompileOpts: {
-    tsNodeOpts: { transpileOnly: true, project: './browser/tsconfig.json' }
+    tsNodeOpts: { transpileOnly: true, project: './tsconfig.json' }
   },
   baseUrl: 'http://localhost:8080',
   capabilities: [
@@ -25,7 +35,7 @@ export const config = {
     [
       'allure',
       {
-        outputDir: 'reports/allure-results',
+        outputDir: 'reports/browser/results',
         disableWebdriverStepsReporting: true,
         disableWebdriverScreenshotsReporting: false
       }
@@ -36,7 +46,10 @@ export const config = {
     [
       'static-server',
       {
-        folders: [{ mount: '/', path: './test/browser/fixtures' }],
+        folders: [
+          { mount: '/', path: fixturesDir },
+          { mount: '/dist', path: distDir }
+        ],
         port: 8080,
         middleware: []
       }
