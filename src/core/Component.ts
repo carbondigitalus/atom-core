@@ -1,6 +1,6 @@
 // Custom Modules
-import type { Props } from '../utils/types/Props';
 import type { VNode } from '../utils/interfaces/VNode';
+import type { Props } from '../utils/types/Props';
 
 /**
  * Prop type definitions for validation
@@ -22,6 +22,7 @@ export abstract class AtomComponent<P extends Props = Props, S = any> {
   public state: S;
   private _isMounted: boolean = false;
   private _constructorCalled: boolean = false;
+  private static _baseConstructorCalled: WeakSet<object> = new WeakSet();
 
   /**
    * Static property for prop type validation (optional)
@@ -40,10 +41,20 @@ export abstract class AtomComponent<P extends Props = Props, S = any> {
    * @param props - The initial props passed to the component
    */
   constructor(props: P) {
+    // Check if super() was called properly - track this instance
+    if (AtomComponent._baseConstructorCalled.has(this)) {
+      throw new Error(
+        `AtomComponent constructor called multiple times for the same instance. This should never happen.`
+      );
+    }
+
+    // Mark that AtomComponent constructor has been called for this instance
+    AtomComponent._baseConstructorCalled.add(this);
+
     // Validate that this is being called properly
     if (this._constructorCalled) {
       throw new Error(
-        `AtomComponent constructor called multiple times. This should never happen.`
+        `Component constructor called multiple times. Make sure you're only calling super(props) once in your constructor.`
       );
     }
 
