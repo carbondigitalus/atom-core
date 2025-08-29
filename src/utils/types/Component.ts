@@ -1,7 +1,14 @@
 // Custom Modules
 import { VNode } from '../interfaces/VNode';
-import { Children } from './Children';
 
-export type Component<P = object> = (
-  props: P & { children?: Children }
-) => VNode<any> | null;
+export abstract class Component<P = object, S = object> {
+  props: P;
+  state: S;
+
+  constructor(props: P) {
+    this.props = props;
+    this.state = {} as S;
+  }
+
+  abstract render(): VNode<any> | null;
+}
