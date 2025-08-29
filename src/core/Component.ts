@@ -30,6 +30,12 @@ export abstract class AtomComponent<P extends Props = Props, S = any> {
   static propTypes?: PropTypes;
 
   /**
+   * Static property for default props (optional)
+   * Subclasses can define this to provide default prop values
+   */
+  static defaultProps?: Partial<Props>;
+
+  /**
    * Component constructor - initializes props and allows state setup
    * @param props - The initial props passed to the component
    */
@@ -41,20 +47,63 @@ export abstract class AtomComponent<P extends Props = Props, S = any> {
       );
     }
 
-    // Validate props against propTypes if defined
     const constructor = this.constructor as typeof AtomComponent;
+
+    // Merge default props with provided props
+    const mergedProps = this._mergeDefaultProps(
+      props,
+      constructor.defaultProps
+    );
+
+    // Validate props against propTypes if defined
     if (constructor.propTypes) {
-      this._validateProps(props, constructor.propTypes, constructor.name);
+      this._validateProps(mergedProps, constructor.propTypes, constructor.name);
     }
 
-    // Store props on the instance
-    this.props = props;
+    // Store merged props on the instance
+    this.props = mergedProps;
 
     // Initialize state as empty object by default
     this.state = {} as S;
 
     // Mark constructor as called
     this._constructorCalled = true;
+
+    // Support for method binding - provide helper method
+    this._bindMethods();
+  }
+
+  /**
+   * Merges default props with provided props
+   * @private
+   */
+  private _mergeDefaultProps(props: P, defaultProps?: Partial<Props>): P {
+    if (!defaultProps) {
+      return props;
+    }
+
+    return {
+      ...defaultProps,
+      ...props
+    } as P;
+  }
+
+  /**
+   * Helper method for explicit method binding
+   * Subclasses can override this to bind methods explicitly
+   * @protected
+   */
+  protected _bindMethods(): void {
+    // Default implementation does nothing
+    // Subclasses can override this for explicit binding:
+    //
+    // protected _bindMethods(): void {
+    //   this.handleClick = this.handleClick.bind(this);
+    //   this.handleSubmit = this.handleSubmit.bind(this);
+    // }
+    //
+    // Or use class property syntax (arrow functions) which auto-bind:
+    // handleClick = () => { ... }
   }
 
   /**
