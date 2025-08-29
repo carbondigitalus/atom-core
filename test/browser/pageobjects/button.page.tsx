@@ -1,5 +1,8 @@
+// NPM Modules
 import { $ } from '@wdio/globals';
 import type { ChainablePromiseElement } from 'webdriverio';
+
+// Custom Modules
 import BasePage from './base.page';
 
 class ButtonPage extends BasePage {
