@@ -1,10 +1,18 @@
 // Custom Modules
 import { Children } from '../utils/types/Children';
+import { Component } from '../utils/types/Component';
 import { IntrinsicVNode } from '../utils/types/IntrinsicVNode';
 import { PrimitiveChild } from '../utils/types/PrimitiveChild';
 
-function isPrimitive(x: unknown): x is PrimitiveChild {
-  return typeof x === 'string' || typeof x === 'number';
+function isClassComponentVNode(
+  x: unknown
+): x is { type: new (props: any) => Component; props?: any } {
+  return (
+    typeof x === 'object' &&
+    x !== null &&
+    'type' in x &&
+    typeof (x as { type?: unknown }).type === 'function'
+  );
 }
 
 function isIntrinsicVNode(x: unknown): x is IntrinsicVNode {
@@ -14,6 +22,10 @@ function isIntrinsicVNode(x: unknown): x is IntrinsicVNode {
     'type' in x &&
     typeof (x as { type?: unknown }).type === 'string'
   );
+}
+
+function isPrimitive(x: unknown): x is PrimitiveChild {
+  return typeof x === 'string' || typeof x === 'number';
 }
 
 // ---- Implementation ----
@@ -75,6 +87,14 @@ function createDOMNode(element: Children): Node {
     }
 
     return domEl;
+  }
+
+  // Class Component handling
+  if (isClassComponentVNode(element)) {
+    const ComponentClass = element.type;
+    const instance = new ComponentClass(element.props || {});
+    const result = instance.render();
+    return createDOMNode(result);
   }
 
   // fallback for unknown objects
