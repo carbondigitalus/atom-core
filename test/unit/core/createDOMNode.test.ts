@@ -6,6 +6,33 @@
 import { describe, it, expect, jest } from '@jest/globals';
 import { Children } from '@atomdev/core/utils/types/Children';
 import { createDOMNode } from '../../../src/core/createDOMNode';
+import { Component } from '../../../src/utils/types/Component';
+import { VNode } from '../../../src/utils/interfaces/VNode';
+
+// Test component classes for class component tests
+class SimpleComponent extends Component<{ message: string }> {
+  render(): VNode<any> | null {
+    return {
+      type: 'div',
+      props: { children: this.props.message }
+    };
+  }
+}
+
+class ComponentWithoutProps extends Component {
+  render(): VNode<any> | null {
+    return {
+      type: 'span',
+      props: { children: 'Hello World' }
+    };
+  }
+}
+
+class ComponentReturningNull extends Component {
+  render(): VNode<any> | null {
+    return null;
+  }
+}
 
 describe('createDOMNode', () => {
   it('renders null/undefined/boolean to empty text node', () => {
@@ -94,5 +121,55 @@ describe('createDOMNode', () => {
     const node = createDOMNode({ foo: 'bar' } as unknown as Children);
     expect(node.nodeType).toBe(Node.TEXT_NODE);
     expect(node.textContent).toBe('');
+  });
+
+  describe('Class Components', () => {
+    it('should render a simple class component with props', () => {
+      const element = {
+        type: SimpleComponent,
+        props: { message: 'Test Message' }
+      };
+
+      const result = createDOMNode(element);
+
+      expect(result).toBeInstanceOf(HTMLDivElement);
+      expect((result as HTMLElement).textContent).toBe('Test Message');
+    });
+
+    it('should render a class component without props', () => {
+      const element = {
+        type: ComponentWithoutProps,
+        props: {}
+      };
+
+      const result = createDOMNode(element);
+
+      expect(result).toBeInstanceOf(HTMLSpanElement);
+      expect((result as HTMLElement).textContent).toBe('Hello World');
+    });
+
+    it('should handle class component returning null', () => {
+      const element = {
+        type: ComponentReturningNull,
+        props: {}
+      };
+
+      const result = createDOMNode(element);
+
+      expect(result).toBeInstanceOf(Text);
+      expect(result.textContent).toBe('');
+    });
+
+    it('should handle class component with empty props', () => {
+      const element = {
+        type: ComponentWithoutProps,
+        props: {}
+      };
+
+      const result = createDOMNode(element);
+
+      expect(result).toBeInstanceOf(HTMLSpanElement);
+      expect((result as HTMLElement).textContent).toBe('Hello World');
+    });
   });
 });
