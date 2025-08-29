@@ -1,12 +1,15 @@
+// NPM Modules
 import { expect } from '@wdio/globals';
+
+// Custom Modules
 import ButtonPage from '../pageobjects/button.page';
 
 describe('Button component (browser harness)', () => {
   it('toggles pressed state and updates UI', async () => {
     await ButtonPage.open('/button.html');
 
-    const button = await ButtonPage.button;
-    const output = await ButtonPage.output;
+    const button = ButtonPage.button;
+    const output = ButtonPage.output;
 
     await button.waitForExist();
     await expect(button).toHaveAttribute('aria-pressed', 'false');
