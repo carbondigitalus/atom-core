@@ -15,7 +15,8 @@
     "start:dev:types": "tsc --watch --noEmit",
     "test:browser": "wdio run test/browser/wdio.conf.ts",
     "test:browser:headful": "WDIO_HEADFUL=1 node -e \"process.exit(0)\" && wdio run test/browser/wdio.conf.ts",
-    "test:unit": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js"
+    "test:coverage": "jest --coverage",
+    "test:unit": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js --coverage"
   },
   "devDependencies": {
     "@types/jest": "^30.0.0",
