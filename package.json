@@ -86,7 +86,7 @@
     "frontend",
     "framework"
   ],
-  "license": "ISC",
+  "license": "MIT",
   "main": "dist/index.js",
   "publishConfig": {
     "access": "public"
