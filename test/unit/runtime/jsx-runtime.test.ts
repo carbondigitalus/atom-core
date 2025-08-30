@@ -37,6 +37,12 @@ describe('jsx-runtime', () => {
       expect(vnode).toStrictEqual(expected);
     });
 
+    it('creates VNode without children (jsxs)', () => {
+      const vnode = jsxs('section', { id: 'no-children' });
+      const expected = createElement('section', { id: 'no-children' });
+      expect(vnode).toStrictEqual(expected);
+    });
+
     it('flattens deeply nested arrays and removes null/false/undefined', () => {
       const vnode = jsxs('ul', {
         children: [null, false, 'A', ['B', ['C', null], false], undefined, 'D']
