@@ -1,6 +1,6 @@
 {
   "name": "@atomdev/core",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "The AtomJS Core project.",
   "scripts": {
     "build": "tsc --project tsconfig.build.json",
