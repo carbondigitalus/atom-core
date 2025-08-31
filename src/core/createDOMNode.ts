@@ -1,18 +1,22 @@
 // Custom Modules
+import { AtomComponent } from './Component';
 import { Children } from '../utils/types/Children';
-import { Component } from '../utils/types/Component';
 import { IntrinsicVNode } from '../utils/types/IntrinsicVNode';
 import { PrimitiveChild } from '../utils/types/PrimitiveChild';
 
 function isClassComponentVNode(
   x: unknown
-): x is { type: new (props: any) => Component; props?: any } {
-  return (
-    typeof x === 'object' &&
-    x !== null &&
-    'type' in x &&
-    typeof (x as { type?: unknown }).type === 'function'
-  );
+): x is { type: new (props: any) => AtomComponent<any, any>; props?: any } {
+  if (typeof x !== 'object' || x === null) return false;
+
+  const maybe = x as { type?: unknown };
+
+  // Must have a "type" and it must be a function (constructor)
+  if (typeof maybe.type !== 'function') return false;
+
+  // Now TS knows it's a function; we can safely read prototype
+  const ctor = maybe.type as { prototype?: unknown };
+  return !!ctor.prototype && ctor.prototype instanceof AtomComponent;
 }
 
 function isIntrinsicVNode(x: unknown): x is IntrinsicVNode {
@@ -93,6 +97,48 @@ function createDOMNode(element: Children): Node {
   if (isClassComponentVNode(element)) {
     const ComponentClass = element.type;
     const instance = new ComponentClass(element.props || {});
+
+    // Mount-phase (after ctor, before first render)
+    const mountAware = instance as unknown as {
+      __enterMountPhase?: () => void;
+      __exitMountPhase?: () => void;
+      __canInvokeBeforeMount?: () => boolean;
+      __markBeforeMountCalled?: () => void;
+      beforeMount?: () => void;
+      render: () => any;
+    };
+
+    // Signal "we are mounting" so setState is allowed but non-scheduling
+    if (typeof mountAware.__enterMountPhase === 'function') {
+      mountAware.__enterMountPhase();
+    }
+
+    try {
+      // Prefer the internal guard; otherwise, if user defined beforeMount(), call it once here.
+      const canInvoke =
+        typeof mountAware.__canInvokeBeforeMount === 'function'
+          ? mountAware.__canInvokeBeforeMount()
+          : typeof mountAware.beforeMount === 'function';
+
+      if (canInvoke) {
+        if (typeof mountAware.__markBeforeMountCalled === 'function') {
+          mountAware.__markBeforeMountCalled();
+        }
+        // Synchronous call; do not await
+        mountAware.beforeMount?.();
+      }
+    } catch (err) {
+      // Don’t break mounting if user code throws
+      // eslint-disable no-console
+      console.error('beforeMount() error:', err);
+      // (Intentionally avoid setState here: it may be disallowed depending on phase/impl.)
+    } finally {
+      if (typeof mountAware.__exitMountPhase === 'function') {
+        mountAware.__exitMountPhase();
+      }
+    }
+
+    // First render AFTER beforeMount()
     const result = instance.render();
     return createDOMNode(result);
   }
