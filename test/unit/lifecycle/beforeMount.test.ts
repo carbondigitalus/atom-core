@@ -4,8 +4,9 @@
 import { describe, test, expect, jest } from '@jest/globals';
 
 // Custom Modules
-import { createDOMNode } from '../../../src/core/createDOMNode';
+import { render } from '@atomdev/core';
 import { AtomComponent } from '../../../src/core/Component';
+import { createDOMNode } from '../../../src/core/createDOMNode';
 import type { VNode } from '../../../src/utils/interfaces/VNode';
 
 type Empty = Record<string, never>;
@@ -158,5 +159,93 @@ describe('beforeMount() lifecycle', () => {
     } as unknown as VNode);
 
     expect(seen).toEqual(['default', 'x']);
+  });
+});
+
+describe('beforeMount - no DOM access yet', () => {
+  test('document cannot find the component DOM inside beforeMount', () => {
+    let sawNullInHook = false;
+
+    class C extends AtomComponent<Empty, Empty> {
+      beforeMount() {
+        // Will be created by render(), but not yet appended
+        const found = document.getElementById('hook-id');
+        sawNullInHook = found === null;
+      }
+      render(): VNode {
+        return {
+          type: 'div',
+          props: { id: 'hook-id', children: 'ok' }
+        } as unknown as VNode;
+      }
+    }
+
+    const container = document.createElement('div');
+    render({ type: C, props: {} } as unknown as VNode, container);
+
+    expect(sawNullInHook).toBe(true);
+    expect(container.querySelector('#hook-id')).not.toBeNull();
+  });
+});
+
+describe('beforeMount - third-party config', () => {
+  test('config built and state flag set before first render', () => {
+    type ChartConfig = {
+      type: string;
+      data: number[];
+      options: Record<string, unknown>;
+    };
+    type Props = {
+      chartType?: string;
+      initialData?: number[];
+      chartOptions?: Record<string, unknown>;
+    };
+
+    class ChartComponent extends AtomComponent<Props, { chartReady: boolean }> {
+      public chartConfig?: ChartConfig;
+      static lastConfig?: ChartConfig; // capture for assertions
+
+      constructor(p: Props) {
+        super(p);
+        this.state = { chartReady: false };
+      }
+
+      beforeMount() {
+        const cfg: ChartConfig = {
+          type: this.props.chartType ?? 'line',
+          data: this.props.initialData ?? [],
+          options: { responsive: true, ...(this.props.chartOptions ?? {}) }
+        };
+        this.chartConfig = cfg;
+        ChartComponent.lastConfig = cfg; // <-- record it
+        this.setState({ chartReady: true });
+      }
+
+      render(): VNode {
+        return {
+          type: 'div',
+          props: {
+            id: 'chart',
+            'data-ready': String(this.state.chartReady),
+            children: 'ready?'
+          }
+        } as unknown as VNode;
+      }
+    }
+
+    const node = createDOMNode({
+      type: ChartComponent,
+      props: { chartType: 'bar', initialData: [1, 2], chartOptions: { a: 1 } }
+    } as unknown as VNode);
+
+    // State flag reflects beforeMount's setState during mount
+    expect((node as Element).getAttribute('data-ready')).toBe('true');
+
+    // Config was built in beforeMount
+    expect(ChartComponent.lastConfig).toEqual({
+      type: 'bar',
+      data: [1, 2],
+      options: { responsive: true, a: 1 }
+    });
   });
 });
