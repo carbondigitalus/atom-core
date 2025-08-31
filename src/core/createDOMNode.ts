@@ -1,5 +1,6 @@
 // Custom Modules
 import { AtomComponent } from './Component';
+import { Component as LegacyComponent } from '../utils/types/Component';
 import { Children } from '../utils/types/Children';
 import { IntrinsicVNode } from '../utils/types/IntrinsicVNode';
 import { PrimitiveChild } from '../utils/types/PrimitiveChild';
@@ -10,13 +11,25 @@ function isClassComponentVNode(
   if (typeof x !== 'object' || x === null) return false;
 
   const maybe = x as { type?: unknown };
+  const t = maybe.type;
 
-  // Must have a "type" and it must be a function (constructor)
-  if (typeof maybe.type !== 'function') return false;
+  // must be a constructor
+  if (typeof t !== 'function') return false;
 
-  // Now TS knows it's a function; we can safely read prototype
-  const ctor = maybe.type as { prototype?: unknown };
-  return !!ctor.prototype && ctor.prototype instanceof AtomComponent;
+  // safely access prototype without using `any`
+  const ctor: { prototype?: unknown } = t as { prototype?: unknown };
+  const proto = ctor.prototype;
+  if (typeof proto !== 'object' || proto === null) return false;
+
+  const isAtom = proto instanceof AtomComponent;
+  const isLegacy =
+    typeof LegacyComponent === 'function' && proto instanceof LegacyComponent;
+
+  // duck type: has a render() on prototype
+  const hasRender =
+    typeof (proto as { render?: unknown }).render === 'function';
+
+  return isAtom || isLegacy || hasRender;
 }
 
 function isIntrinsicVNode(x: unknown): x is IntrinsicVNode {
