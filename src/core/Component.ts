@@ -14,48 +14,25 @@ interface TestInstance {
 export abstract class AtomComponent<P extends Props = Props, S = any> {
   public props: P;
   public state: S;
-  private _isMounted: boolean = false;
-  private _constructorCalled: boolean = false;
   private static _baseConstructorCalled: WeakSet<object> = new WeakSet();
-
-  /* istanbul ignore next: test helper */
-  public static __forceGuardCheck(
-    instance: object,
-    guard: 'base' | 'ctor'
-  ): void {
-    if (guard === 'base') {
-      if (this._baseConstructorCalled.has(instance)) {
-        throw new Error(
-          'AtomComponent constructor called multiple times for the same instance. This should never happen.'
-        );
-      }
-    }
-    if (guard === 'ctor') {
-      const inst = instance as TestInstance;
-      if (inst._constructorCalled) {
-        throw new Error(
-          "Component constructor called multiple times. Make sure you're only calling super(props) once in your constructor."
-        );
-      }
-    }
-  }
-
-  /* istanbul ignore next: test helper */
-  public static __forceMarkBase(instance: object): void {
-    this._baseConstructorCalled.add(instance);
-  }
-
-  /**
-   * Static property for prop type validation (optional)
-   * Subclasses can define this to enable prop validation
-   */
-  static propTypes?: PropTypes;
+  // Ensures beforeMount() is only invoked once
+  private _beforeMountCalled: boolean = false;
+  private _constructorCalled: boolean = false;
+  private _isMounted: boolean = false;
+  // Tracks “mount phase” (constructor finished, before DOM insertion)
+  private _isMounting: boolean = false;
 
   /**
    * Static property for default props (optional)
    * Subclasses can define this to provide default prop values
    */
   static defaultProps?: Partial<Props>;
+
+  /**
+   * Static property for prop type validation (optional)
+   * Subclasses can define this to enable prop validation
+   */
+  static propTypes?: PropTypes;
 
   /**
    * Component constructor - initializes props and allows state setup
@@ -108,21 +85,6 @@ export abstract class AtomComponent<P extends Props = Props, S = any> {
   }
 
   /**
-   * Merges default props with provided props
-   * @private
-   */
-  private _mergeDefaultProps(props: P, defaultProps?: Partial<Props>): P {
-    if (!defaultProps) {
-      return props;
-    }
-
-    return {
-      ...defaultProps,
-      ...props
-    } as P;
-  }
-
-  /**
    * Helper method for explicit method binding
    * Subclasses can override this to bind methods explicitly
    * @protected
@@ -138,6 +100,68 @@ export abstract class AtomComponent<P extends Props = Props, S = any> {
     //
     // Or use class property syntax (arrow functions) which auto-bind:
     // handleClick = () => { ... }
+  }
+
+  /** @internal - renderer should check before invoking beforeMount() */
+  public __canInvokeBeforeMount(): boolean {
+    return !this._beforeMountCalled && typeof this.beforeMount === 'function';
+  }
+
+  /** @internal - called by renderer before invoking beforeMount() */
+  public __enterMountPhase(): void {
+    this._isMounting = true;
+  }
+
+  /** @internal - called by renderer immediately after beforeMount() returns/throws */
+  public __exitMountPhase(): void {
+    this._isMounting = false;
+  }
+
+  /* istanbul ignore next: test helper */
+  public static __forceGuardCheck(
+    instance: object,
+    guard: 'base' | 'ctor'
+  ): void {
+    if (guard === 'base') {
+      if (this._baseConstructorCalled.has(instance)) {
+        throw new Error(
+          'AtomComponent constructor called multiple times for the same instance. This should never happen.'
+        );
+      }
+    }
+    if (guard === 'ctor') {
+      const inst = instance as TestInstance;
+      if (inst._constructorCalled) {
+        throw new Error(
+          "Component constructor called multiple times. Make sure you're only calling super(props) once in your constructor."
+        );
+      }
+    }
+  }
+
+  /* istanbul ignore next: test helper */
+  public static __forceMarkBase(instance: object): void {
+    this._baseConstructorCalled.add(instance);
+  }
+
+  /** @internal - mark hook as consumed exactly once */
+  public __markBeforeMountCalled(): void {
+    this._beforeMountCalled = true;
+  }
+
+  /**
+   * Merges default props with provided props
+   * @private
+   */
+  private _mergeDefaultProps(props: P, defaultProps?: Partial<Props>): P {
+    if (!defaultProps) {
+      return props;
+    }
+
+    return {
+      ...defaultProps,
+      ...props
+    } as P;
   }
 
   /**
@@ -192,7 +216,8 @@ export abstract class AtomComponent<P extends Props = Props, S = any> {
       );
     }
 
-    if (!this._isMounted) {
+    // Disallow during constructor, but allow during mount phase
+    if (!this._isMounted && !this._isMounting) {
       throw new Error(
         'Cannot call setState() during constructor. Use this.state = {...} instead.'
       );
@@ -204,13 +229,33 @@ export abstract class AtomComponent<P extends Props = Props, S = any> {
       ...partialState
     };
 
+    // If we’re mounting, do NOT schedule an extra render.
+    if (this._isMounting) {
+      return;
+    }
+
     // TODO: Trigger re-render (will be implemented later)
   }
+
+  /**
+   * Lifecycle method - called after component updates
+   */
+  public afterUpdate?(prevProps: P, prevState: S): void;
 
   /**
    * Lifecycle method - called before component mounts
    */
   public beforeMount?(): void;
+
+  /**
+   * Lifecycle method - called before component unmounts
+   */
+  public beforeUnmount?(): void;
+
+  /**
+   * Lifecycle method - called before component updates
+   */
+  public beforeUpdate?(nextProps: P, nextState: S): void;
 
   /**
    * Lifecycle method - called after component mounts
@@ -220,23 +265,8 @@ export abstract class AtomComponent<P extends Props = Props, S = any> {
   }
 
   /**
-   * Lifecycle method - called before component updates
-   */
-  public beforeUpdate?(nextProps: P, nextState: S): void;
-
-  /**
-   * Lifecycle method - called after component updates
-   */
-  public afterUpdate?(prevProps: P, prevState: S): void;
-
-  /**
    * Lifecycle method - determines if component should update
    */
   public shouldUpdate?(nextProps: P, nextState: S): boolean;
-
-  /**
-   * Lifecycle method - called before component unmounts
-   */
-  public beforeUnmount?(): void;
 }
 export { PropTypes };
