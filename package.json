@@ -1,6 +1,6 @@
 {
   "name": "@atomdev/core",
-  "version": "0.5.1",
+  "version": "0.6.0",
   "description": "The AtomJS Core project.",
   "scripts": {
     "build": "tsc --project tsconfig.build.json",
@@ -74,7 +74,7 @@
     "README.md",
     "LICENSE"
   ],
-  "homepage": "https://github.com/carbondigitalus/atom-core#readme",
+  "homepage": "https://atomjs.dev",
   "keywords": [
     "react",
     "ui",
