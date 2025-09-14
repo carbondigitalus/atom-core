@@ -1,13 +1,5 @@
-/**
- * Interface for DOM nodes that may have attached component instances
- */
-export interface ComponentAttachedNode extends Node {
-  __atomComponent?: {
-    __canInvokeAfterMount?: () => boolean;
-    __markAfterMountCalled?: () => void;
-    afterMount?: () => void | Promise<void>;
-  };
-}
+// Custom Modules
+import ComponentAttachedNode from '@atomdev/core/utils/interfaces/ComponentAttachedNode';
 
 /**
  * Handles ref callback execution with error handling
