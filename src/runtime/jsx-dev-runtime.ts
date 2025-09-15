@@ -32,15 +32,10 @@ export function jsxDEV<P = Props>(
   }
 
   // Remove children from props to avoid passing it twice
-  const { children: _dropChildren, ...withoutChildren } =
-    baseWithDev as unknown as Props & { children?: Children };
+  const { children: _dropChildren, ...withoutChildren } = baseWithDev as unknown as Props & { children?: Children };
   void _dropChildren;
 
   const flat = collectChildren(children);
 
-  return createElement<P>(
-    type,
-    withoutChildren as unknown as P & Props,
-    ...flat
-  );
+  return createElement<P>(type, withoutChildren as unknown as P & Props, ...flat);
 }
