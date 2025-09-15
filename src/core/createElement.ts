@@ -1,5 +1,5 @@
 // Custom Modules
-import { VNode } from '../utils/interfaces/VNode';
+import VNode from '../utils/interfaces/VNode';
 import { Child } from '../utils/types/Child';
 import { Children } from '../utils/types/Children';
 import { ElementType } from '../utils/types/ElementType';
@@ -21,7 +21,10 @@ export function createElement<P = Props>(
   ...spreadChildren: Child[]
 ): VNode<P> {
   const base = rawProps ?? {};
-  const { key, children, ...rest } = base;
+  const { key, children, ...rest } = base as (P | Props) & {
+    key?: Key;
+    children?: Children;
+  };
 
   const finalChildren = normalizeChildren(children, spreadChildren);
 
