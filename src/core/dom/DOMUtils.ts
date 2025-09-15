@@ -6,10 +6,7 @@ import ComponentAttachedNode from '@atomdev/core/utils/interfaces/ComponentAttac
  * @param refCallback - The ref callback function
  * @param element - The DOM element to pass to the callback
  */
-export function executeRefCallback(
-  refCallback: (el: HTMLElement | null) => void,
-  element: HTMLElement
-): void {
+export function executeRefCallback(refCallback: (el: HTMLElement | null) => void, element: HTMLElement): void {
   try {
     refCallback(element);
   } catch (refError) {
@@ -23,11 +20,7 @@ export function executeRefCallback(
  * @param eventName - The event name (e.g., 'click')
  * @param handler - The event handler function
  */
-export function attachEventListener(
-  element: HTMLElement,
-  eventName: string,
-  handler: EventListener
-): void {
+export function attachEventListener(element: HTMLElement, eventName: string, handler: EventListener): void {
   element.addEventListener(eventName, handler);
 }
 
@@ -37,11 +30,7 @@ export function attachEventListener(
  * @param key - The attribute name
  * @param value - The attribute value
  */
-export function setElementAttribute(
-  element: HTMLElement,
-  key: string,
-  value: unknown
-): void {
+export function setElementAttribute(element: HTMLElement, key: string, value: unknown): void {
   element.setAttribute(key, String(value));
 }
 
@@ -50,10 +39,7 @@ export function setElementAttribute(
  * @param element - The DOM element
  * @param props - The props object containing attributes, events, and ref
  */
-export function applyPropsToElement(
-  element: HTMLElement,
-  props: Record<string, unknown>
-): void {
+export function applyPropsToElement(element: HTMLElement, props: Record<string, unknown>): void {
   const entries = Object.entries(props);
 
   for (const [key, value] of entries) {
