@@ -53,9 +53,7 @@ export function executeDidMount(component: DidMountCapableComponent): void {
  * @param component - The component to validate
  * @returns boolean - true if component has proper didMount support
  */
-export function hasDidMountSupport(
-  component: unknown
-): component is DidMountCapableComponent {
+export function hasDidMountSupport(component: unknown): component is DidMountCapableComponent {
   if (typeof component !== 'object' || component === null) {
     return false;
   }
@@ -63,10 +61,7 @@ export function hasDidMountSupport(
   const comp = component as DidMountCapableComponent;
 
   // Must have at least the guard methods or the lifecycle method itself
-  return (
-    typeof comp.__canInvokeDidMount === 'function' ||
-    typeof comp.didMount === 'function'
-  );
+  return typeof comp.__canInvokeDidMount === 'function' || typeof comp.didMount === 'function';
 }
 
 /**
