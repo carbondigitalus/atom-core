@@ -1,5 +1,5 @@
 // Custom Modules
-import { BeforeMountCapableComponent } from '@atomdev/core/utils/interfaces/BeforeMountCapableComponent';
+import BeforeMountCapableComponent from '@atomdev/core/utils/interfaces/BeforeMountCapableComponent';
 
 /**
  * Executes the beforeMount lifecycle method with proper phase management and error handling
