@@ -1,7 +1,7 @@
 // Custom Modules
 import { createElement } from '../core/createElement';
 import { collectChildren } from '../utils/functions/collectChildren';
-import { VNode } from '../utils/interfaces/VNode';
+import VNode from '../utils/interfaces/VNode';
 import { Children } from '../utils/types/Children';
 import { ElementType } from '../utils/types/ElementType';
 import { Key } from '../utils/types/Key';
