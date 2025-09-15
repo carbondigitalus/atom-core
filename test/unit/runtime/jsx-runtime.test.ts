@@ -46,14 +46,7 @@ describe('jsx-runtime', () => {
 
     it('flattens deeply nested arrays and removes null/false/undefined', () => {
       const vnode = jsxs('ul', {
-        children: [
-          null,
-          false,
-          'A',
-          ['B', ['C', null], false],
-          undefined,
-          'D'
-        ] as Children
+        children: [null, false, 'A', ['B', ['C', null], false], undefined, 'D'] as Children
       });
       const expected = createElement('ul', {}, 'A', 'B', 'C', 'D');
       expect(vnode).toStrictEqual(expected);
