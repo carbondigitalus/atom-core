@@ -65,10 +65,7 @@ export abstract class AtomComponent<P extends Props = Props, S = any> {
     const constructor = this.constructor as typeof AtomComponent;
 
     // Merge default props with provided props
-    const mergedProps = this._mergeDefaultProps(
-      props,
-      constructor.defaultProps
-    );
+    const mergedProps = this._mergeDefaultProps(props, constructor.defaultProps);
 
     // Validate props against propTypes if defined
     if (constructor.propTypes) {
@@ -152,10 +149,7 @@ export abstract class AtomComponent<P extends Props = Props, S = any> {
   }
 
   /* istanbul ignore next: test helper */
-  public static __forceGuardCheck(
-    instance: object,
-    guard: 'base' | 'ctor'
-  ): void {
+  public static __forceGuardCheck(instance: object, guard: 'base' | 'ctor'): void {
     if (guard === 'base') {
       if (this._baseConstructorCalled.has(instance)) {
         throw new Error(
@@ -197,11 +191,7 @@ export abstract class AtomComponent<P extends Props = Props, S = any> {
    * Validates props against defined propTypes
    * @private
    */
-  private _validateProps(
-    props: P,
-    propTypes: PropTypes,
-    componentName: string
-  ): void {
+  private _validateProps(props: P, propTypes: PropTypes, componentName: string): void {
     for (const propName in propTypes) {
       const validator = propTypes[propName];
       const propValue = (props as Record<string, unknown>)[propName];
@@ -209,16 +199,12 @@ export abstract class AtomComponent<P extends Props = Props, S = any> {
       try {
         const error = validator(propValue, propName, componentName);
         if (error) {
-          throw new Error(
-            `Invalid prop \`${propName}\` supplied to \`${componentName}\`: ${error.message}`
-          );
+          throw new Error(`Invalid prop \`${propName}\` supplied to \`${componentName}\`: ${error.message}`);
         }
       } catch (validationError) {
         throw new Error(
           `Prop validation failed for \`${propName}\` in \`${componentName}\`: ${
-            validationError instanceof Error
-              ? validationError.message
-              : String(validationError)
+            validationError instanceof Error ? validationError.message : String(validationError)
           }`
         );
       }
@@ -247,9 +233,7 @@ export abstract class AtomComponent<P extends Props = Props, S = any> {
 
     // Disallow during constructor, but allow during mount phase and after mounting
     if (!this._isMounted && !this._isMounting) {
-      throw new Error(
-        'Cannot call setState() during constructor. Use this.state = {...} instead.'
-      );
+      throw new Error('Cannot call setState() during constructor. Use this.state = {...} instead.');
     }
 
     // Merge new state with existing state
