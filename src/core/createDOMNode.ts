@@ -1,13 +1,28 @@
 // Custom Modules
 import { AtomComponent } from './Component';
+import {
+  applyPropsToElement,
+  createTextNode,
+  createElement,
+  attachComponentToNode
+} from './dom/DOMUtils';
+import { executeBeforeMount } from './lifecycle/beforeMount';
+import { executeDidMount } from './lifecycle/didMount';
+import AfterMountCapableComponent from '../utils/interfaces/AfterMountCapableComponent';
+import BeforeMountCapableComponent from '../utils/interfaces/BeforeMountCapableComponent';
+import DidMountCapableComponent from '../utils/interfaces/DidMountCapableComponent';
+import VNode from '../utils/interfaces/VNode';
 import { Component as LegacyComponent } from '../utils/types/Component';
 import { Children } from '../utils/types/Children';
 import { IntrinsicVNode } from '../utils/types/IntrinsicVNode';
 import { PrimitiveChild } from '../utils/types/PrimitiveChild';
 
+/**
+ * Type guard for class component VNodes - more specific than generic VNode
+ */
 function isClassComponentVNode(
   x: unknown
-): x is { type: new (props: any) => AtomComponent<any, any>; props?: any } {
+): x is VNode & { type: new (props: any) => AtomComponent<any, any> } {
   if (typeof x !== 'object' || x === null) return false;
 
   const maybe = x as { type?: unknown };
@@ -49,12 +64,12 @@ function isPrimitive(x: unknown): x is PrimitiveChild {
 function createDOMNode(element: Children): Node {
   // null/undefined/booleans render nothing
   if (element == null || element === false || element === true) {
-    return document.createTextNode('');
+    return createTextNode('');
   }
 
   // primitives
   if (isPrimitive(element)) {
-    return document.createTextNode(String(element));
+    return createTextNode(String(element));
   }
 
   // arrays
@@ -68,29 +83,18 @@ function createDOMNode(element: Children): Node {
 
   // Intrinsic VNode (guaranteed string tag here)
   if (isIntrinsicVNode(element)) {
-    const tagName = element.type as string; // satisfy createElement overload 3
+    const tagName = element.type as string;
     const props = element.props as
       | (Record<string, unknown> & { children?: Children })
       | undefined;
 
-    const domEl = document.createElement(tagName);
+    const domEl = createElement(tagName);
 
     if (props) {
-      // iterate safely over props (typed as Record<string, unknown>)
-      const entries = Object.entries(props as Record<string, unknown>);
-      for (const [key, value] of entries) {
-        if (key === 'children') continue;
+      // Use DOMUtils to apply props (handles refs, events, attributes)
+      applyPropsToElement(domEl, props as Record<string, unknown>);
 
-        if (key.startsWith('on') && typeof value === 'function') {
-          const eventName = key.slice(2).toLowerCase();
-          domEl.addEventListener(eventName, value as EventListener);
-          continue;
-        }
-
-        domEl.setAttribute(key, String(value));
-      }
-
-      // children
+      // Handle children
       const children = props.children;
       if (children !== undefined) {
         if (Array.isArray(children)) {
@@ -108,56 +112,32 @@ function createDOMNode(element: Children): Node {
 
   // Class Component handling
   if (isClassComponentVNode(element)) {
-    const ComponentClass = element.type;
-    const instance = new ComponentClass(element.props || {});
+    // Use any casting to bypass TypeScript inference issues
+    const classElement = element as any;
+    const ComponentClass = classElement.type as new (
+      props: any
+    ) => AtomComponent<any, any>;
+    const instance = new ComponentClass(classElement.props || {});
 
-    // Mount-phase (after ctor, before first render)
-    const mountAware = instance as unknown as {
-      __enterMountPhase?: () => void;
-      __exitMountPhase?: () => void;
-      __canInvokeBeforeMount?: () => boolean;
-      __markBeforeMountCalled?: () => void;
-      beforeMount?: () => void;
-      render: () => any;
-    };
-
-    // Signal "we are mounting" so setState is allowed but non-scheduling
-    if (typeof mountAware.__enterMountPhase === 'function') {
-      mountAware.__enterMountPhase();
-    }
-
-    try {
-      // Prefer the internal guard; otherwise, if user defined beforeMount(), call it once here.
-      const canInvoke =
-        typeof mountAware.__canInvokeBeforeMount === 'function'
-          ? mountAware.__canInvokeBeforeMount()
-          : typeof mountAware.beforeMount === 'function';
-
-      if (canInvoke) {
-        if (typeof mountAware.__markBeforeMountCalled === 'function') {
-          mountAware.__markBeforeMountCalled();
-        }
-        // Synchronous call; do not await
-        mountAware.beforeMount?.();
-      }
-    } catch (err) {
-      // Don’t break mounting if user code throws
-      // eslint-disable no-console
-      console.error('beforeMount() error:', err);
-      // (Intentionally avoid setState here: it may be disallowed depending on phase/impl.)
-    } finally {
-      if (typeof mountAware.__exitMountPhase === 'function') {
-        mountAware.__exitMountPhase();
-      }
-    }
+    // Execute beforeMount lifecycle using the dedicated module
+    executeBeforeMount(instance as BeforeMountCapableComponent);
 
     // First render AFTER beforeMount()
     const result = instance.render();
-    return createDOMNode(result);
+    const domNode = createDOMNode(result);
+
+    // Execute didMount lifecycle
+    executeDidMount(instance as DidMountCapableComponent);
+
+    // Attach component instance to DOM node for afterMount processing
+    // This will be used by render.ts to call afterMount() after DOM insertion
+    attachComponentToNode(domNode, instance as AfterMountCapableComponent);
+
+    return domNode;
   }
 
   // fallback for unknown objects
-  return document.createTextNode('');
+  return createTextNode('');
 }
 
 export { createDOMNode };
