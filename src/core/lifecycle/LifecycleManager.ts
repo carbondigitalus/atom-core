@@ -40,9 +40,7 @@ export class LifecycleManager {
    * This is called separately because it happens after the DOM is inserted into the container
    * @param component - The component instance
    */
-  public static async executeAfterMountLifecycle(
-    component: AfterMountCapableComponent
-  ): Promise<void> {
+  public static async executeAfterMountLifecycle(component: AfterMountCapableComponent): Promise<void> {
     await executeAfterMount(component);
   }
 
@@ -51,9 +49,7 @@ export class LifecycleManager {
    * @param component - The component to check
    * @returns boolean - true if component supports all mounting lifecycle methods
    */
-  public static supportsFullMountingLifecycle(
-    component: unknown
-  ): component is FullLifecycleComponent {
+  public static supportsFullMountingLifecycle(component: unknown): component is FullLifecycleComponent {
     if (typeof component !== 'object' || component === null) {
       return false;
     }
@@ -62,12 +58,9 @@ export class LifecycleManager {
 
     return (
       typeof comp.render === 'function' &&
-      (typeof comp.beforeMount === 'function' ||
-        typeof comp.__canInvokeBeforeMount === 'function') &&
-      (typeof comp.didMount === 'function' ||
-        typeof comp.__canInvokeDidMount === 'function') &&
-      (typeof comp.afterMount === 'function' ||
-        typeof comp.__canInvokeAfterMount === 'function')
+      (typeof comp.beforeMount === 'function' || typeof comp.__canInvokeBeforeMount === 'function') &&
+      (typeof comp.didMount === 'function' || typeof comp.__canInvokeDidMount === 'function') &&
+      (typeof comp.afterMount === 'function' || typeof comp.__canInvokeAfterMount === 'function')
     );
   }
 
@@ -97,9 +90,7 @@ export class LifecycleManager {
    * @param component - The component to validate
    * @throws Error if component is not ready for mounting
    */
-  public static validateMountingReadiness(
-    component: AtomComponent<any, any>
-  ): void {
+  public static validateMountingReadiness(component: AtomComponent<any, any>): void {
     const comp = component as any;
 
     if (!comp._constructorCalled) {
