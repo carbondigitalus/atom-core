@@ -18,12 +18,13 @@ export function executeDidMount(component: DidMountCapableComponent): void {
         component.__markDidMountCalled();
       }
 
+      // Call didMount - handle both sync and async versions
+      const didMountResult = component.didMount?.();
+
+      // Mark as mounted AFTER didMount completes
       if (typeof component.__markMounted === 'function') {
         component.__markMounted();
       }
-
-      // Call didMount - handle both sync and async versions
-      const didMountResult = component.didMount?.();
 
       // If didMount returns a Promise, we don't await it here to avoid blocking render
       if (didMountResult && typeof didMountResult.then === 'function') {
@@ -33,12 +34,16 @@ export function executeDidMount(component: DidMountCapableComponent): void {
       }
     }
   } catch (error) {
-    // Don't break rendering if didMount fails
     console.error('didMount() error:', error);
 
     // Still mark as mounted even if didMount failed
-    if (typeof component.__markMounted === 'function') {
-      component.__markMounted();
+    try {
+      if (typeof component.__markMounted === 'function') {
+        component.__markMounted();
+      }
+    } catch (markError) {
+      // Ignore errors in marking mounted
+      console.error('markError error:', markError);
     }
   }
 }
