@@ -35,10 +35,7 @@ class TestComponentWithBinding extends AtomComponent<Props, { count: number }> {
   }
 }
 
-class TestComponentWithArrowFunction extends AtomComponent<
-  Props,
-  { count: number }
-> {
+class TestComponentWithArrowFunction extends AtomComponent<Props, { count: number }> {
   constructor(props: Props) {
     super(props);
     this.state = { count: 0 };
@@ -53,10 +50,7 @@ class TestComponentWithArrowFunction extends AtomComponent<
   }
 }
 
-class TestComponentWithDefaultProps extends AtomComponent<
-  Props,
-  { title: string }
-> {
+class TestComponentWithDefaultProps extends AtomComponent<Props, { title: string }> {
   static defaultProps = { title: 'Default Title', count: 10 };
 
   constructor(props: Props) {
@@ -69,10 +63,7 @@ class TestComponentWithDefaultProps extends AtomComponent<
   }
 }
 
-class TestComponentWithPropTypes extends AtomComponent<
-  Props,
-  { title: string }
-> {
+class TestComponentWithPropTypes extends AtomComponent<Props, { title: string }> {
   static propTypes: PropTypes = {
     title: (value: any, propName: string) => {
       if (value === undefined || value === null) {
@@ -153,10 +144,7 @@ describe('AtomComponent Constructor', () => {
     });
 
     test('State can be complex object with multiple properties', () => {
-      class ComplexStateComponent extends AtomComponent<
-        Props,
-        { count: number; visible: boolean; items: string[] }
-      > {
+      class ComplexStateComponent extends AtomComponent<Props, { count: number; visible: boolean; items: string[] }> {
         constructor(props: Props) {
           super(props);
           this.state = { count: 0, visible: true, items: ['item1', 'item2'] };
@@ -279,9 +267,7 @@ describe('AtomComponent Constructor', () => {
       const component = new TestComponent({});
 
       // Reset the constructor flag to simulate incomplete constructor
-      (
-        component as unknown as { _constructorCalled: boolean }
-      )._constructorCalled = false;
+      (component as unknown as { _constructorCalled: boolean })._constructorCalled = false;
 
       expect(() => {
         component.setState({ count: 1 });
@@ -346,9 +332,7 @@ describe('AtomComponent Constructor', () => {
 
       expect(() => {
         new TestComponentWithPropTypes(props);
-      }).toThrow(
-        'Invalid prop `title` supplied to `TestComponentWithPropTypes`: title must be a string'
-      );
+      }).toThrow('Invalid prop `title` supplied to `TestComponentWithPropTypes`: title must be a string');
     });
 
     test('Props validation throws error for missing required props', () => {
@@ -356,9 +340,7 @@ describe('AtomComponent Constructor', () => {
 
       expect(() => {
         new TestComponentWithPropTypes(props);
-      }).toThrow(
-        'Invalid prop `title` supplied to `TestComponentWithPropTypes`: title is required'
-      );
+      }).toThrow('Invalid prop `title` supplied to `TestComponentWithPropTypes`: title is required');
     });
 
     test('Props validation allows optional props to be undefined', () => {
@@ -374,9 +356,7 @@ describe('AtomComponent Constructor', () => {
 
       expect(() => {
         new TestComponentWithPropTypes(props);
-      }).toThrow(
-        'Invalid prop `count` supplied to `TestComponentWithPropTypes`: count must be a number'
-      );
+      }).toThrow('Invalid prop `count` supplied to `TestComponentWithPropTypes`: count must be a number');
     });
   });
 
