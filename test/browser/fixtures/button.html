@@ -26,8 +26,7 @@
       const btn = document.getElementById('primary');
       const out = document.getElementById('output');
       btn.addEventListener('click', () => {
-        const next =
-          btn.getAttribute('aria-pressed') === 'true' ? 'false' : 'true';
+        const next = btn.getAttribute('aria-pressed') === 'true' ? 'false' : 'true';
         btn.setAttribute('aria-pressed', next);
         btn.classList.toggle('active');
         out.textContent = next === 'true' ? 'clicked' : 'idle';
