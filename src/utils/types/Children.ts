@@ -1,4 +1,4 @@
 // Custom Modules
 import { Child } from './Child';
 
-export type Children = Child | Children[];
+export type Children = Child | Child[];
