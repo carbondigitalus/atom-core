@@ -1,17 +1,7 @@
 // Custom Modules
-import { createDOMNode } from './createDOMNode';
+import { createDOMNode } from './dom/createDOMNode';
+import ComponentAttachedNode from '../utils/interfaces/ComponentAttachedNode';
 import { Children } from '../utils/types/Children';
-
-/**
- * Interface for DOM nodes that may have attached component instances
- */
-interface ComponentAttachedNode extends Node {
-  __atomComponent?: {
-    __canInvokeAfterMount?: () => boolean;
-    __markAfterMountCalled?: () => void;
-    afterMount?: () => void | Promise<void>;
-  };
-}
 
 /**
  * Recursively traverses DOM tree and invokes afterMount() on attached components
