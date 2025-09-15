@@ -1,6 +1,6 @@
 // Custom Modules
-import { PropTypes } from '../utils/interfaces/PropTypes';
-import type { VNode } from '../utils/interfaces/VNode';
+import PropTypes from '../utils/interfaces/PropTypes';
+import VNode from '../utils/interfaces/VNode';
 import type { Props } from '../utils/types/Props';
 
 interface TestInstance {
@@ -17,9 +17,13 @@ export abstract class AtomComponent<P extends Props = Props, S = any> {
   private static _baseConstructorCalled: WeakSet<object> = new WeakSet();
   // Ensures beforeMount() is only invoked once
   private _beforeMountCalled: boolean = false;
+  // Ensures didMount() is only invoked once
+  private _didMountCalled: boolean = false;
+  // Ensures afterMount() is only invoked once
+  private _afterMountCalled: boolean = false;
   private _constructorCalled: boolean = false;
   private _isMounted: boolean = false;
-  // Tracks “mount phase” (constructor finished, before DOM insertion)
+  // Tracks "mount phase" (constructor finished, before DOM insertion)
   private _isMounting: boolean = false;
 
   /**
@@ -61,10 +65,7 @@ export abstract class AtomComponent<P extends Props = Props, S = any> {
     const constructor = this.constructor as typeof AtomComponent;
 
     // Merge default props with provided props
-    const mergedProps = this._mergeDefaultProps(
-      props,
-      constructor.defaultProps
-    );
+    const mergedProps = this._mergeDefaultProps(props, constructor.defaultProps);
 
     // Validate props against propTypes if defined
     if (constructor.propTypes) {
@@ -107,6 +108,16 @@ export abstract class AtomComponent<P extends Props = Props, S = any> {
     return !this._beforeMountCalled && typeof this.beforeMount === 'function';
   }
 
+  /** @internal - renderer should check before invoking didMount() */
+  public __canInvokeDidMount(): boolean {
+    return !this._didMountCalled && typeof this.didMount === 'function';
+  }
+
+  /** @internal - renderer should check before invoking afterMount() */
+  public __canInvokeAfterMount(): boolean {
+    return !this._afterMountCalled && typeof this.afterMount === 'function';
+  }
+
   /** @internal - called by renderer before invoking beforeMount() */
   public __enterMountPhase(): void {
     this._isMounting = true;
@@ -117,11 +128,28 @@ export abstract class AtomComponent<P extends Props = Props, S = any> {
     this._isMounting = false;
   }
 
+  /** @internal - mark hook as consumed exactly once */
+  public __markBeforeMountCalled(): void {
+    this._beforeMountCalled = true;
+  }
+
+  /** @internal - mark didMount hook as consumed exactly once */
+  public __markDidMountCalled(): void {
+    this._didMountCalled = true;
+  }
+
+  /** @internal - mark afterMount hook as consumed exactly once */
+  public __markAfterMountCalled(): void {
+    this._afterMountCalled = true;
+  }
+
+  /** @internal - mark component as fully mounted */
+  public __markMounted(): void {
+    this._isMounted = true;
+  }
+
   /* istanbul ignore next: test helper */
-  public static __forceGuardCheck(
-    instance: object,
-    guard: 'base' | 'ctor'
-  ): void {
+  public static __forceGuardCheck(instance: object, guard: 'base' | 'ctor'): void {
     if (guard === 'base') {
       if (this._baseConstructorCalled.has(instance)) {
         throw new Error(
@@ -144,11 +172,6 @@ export abstract class AtomComponent<P extends Props = Props, S = any> {
     this._baseConstructorCalled.add(instance);
   }
 
-  /** @internal - mark hook as consumed exactly once */
-  public __markBeforeMountCalled(): void {
-    this._beforeMountCalled = true;
-  }
-
   /**
    * Merges default props with provided props
    * @private
@@ -168,11 +191,7 @@ export abstract class AtomComponent<P extends Props = Props, S = any> {
    * Validates props against defined propTypes
    * @private
    */
-  private _validateProps(
-    props: P,
-    propTypes: PropTypes,
-    componentName: string
-  ): void {
+  private _validateProps(props: P, propTypes: PropTypes, componentName: string): void {
     for (const propName in propTypes) {
       const validator = propTypes[propName];
       const propValue = (props as Record<string, unknown>)[propName];
@@ -180,16 +199,12 @@ export abstract class AtomComponent<P extends Props = Props, S = any> {
       try {
         const error = validator(propValue, propName, componentName);
         if (error) {
-          throw new Error(
-            `Invalid prop \`${propName}\` supplied to \`${componentName}\`: ${error.message}`
-          );
+          throw new Error(`Invalid prop \`${propName}\` supplied to \`${componentName}\`: ${error.message}`);
         }
       } catch (validationError) {
         throw new Error(
           `Prop validation failed for \`${propName}\` in \`${componentName}\`: ${
-            validationError instanceof Error
-              ? validationError.message
-              : String(validationError)
+            validationError instanceof Error ? validationError.message : String(validationError)
           }`
         );
       }
@@ -216,11 +231,9 @@ export abstract class AtomComponent<P extends Props = Props, S = any> {
       );
     }
 
-    // Disallow during constructor, but allow during mount phase
+    // Disallow during constructor, but allow during mount phase and after mounting
     if (!this._isMounted && !this._isMounting) {
-      throw new Error(
-        'Cannot call setState() during constructor. Use this.state = {...} instead.'
-      );
+      throw new Error('Cannot call setState() during constructor. Use this.state = {...} instead.');
     }
 
     // Merge new state with existing state
@@ -229,12 +242,13 @@ export abstract class AtomComponent<P extends Props = Props, S = any> {
       ...partialState
     };
 
-    // If we’re mounting, do NOT schedule an extra render.
+    // If we're mounting, do NOT schedule an extra render.
     if (this._isMounting) {
       return;
     }
 
     // TODO: Trigger re-render (will be implemented later)
+    // For now, setState in afterMount will work but won't trigger re-renders
   }
 
   /**
@@ -244,6 +258,7 @@ export abstract class AtomComponent<P extends Props = Props, S = any> {
 
   /**
    * Lifecycle method - called before component mounts
+   * Perfect for setting up subscriptions or timers that don't require DOM access
    */
   public beforeMount?(): void;
 
@@ -258,15 +273,30 @@ export abstract class AtomComponent<P extends Props = Props, S = any> {
   public beforeUpdate?(nextProps: P, nextState: S): void;
 
   /**
-   * Lifecycle method - called after component mounts
+   * Lifecycle method - called after DOM creation but before DOM insertion
+   * Called only once during component lifetime
+   * Perfect for setup that requires DOM structure but not full insertion
    */
-  public afterMount?(): void {
-    this._isMounted = true;
-  }
+  public didMount?(): void | Promise<void>;
+
+  /**
+   * Lifecycle method - called after component mounts and full DOM insertion
+   * Called only once during component lifetime
+   * Has full access to DOM elements via refs and computed styles
+   * Perfect for:
+   * - API calls and data fetching that trigger re-renders
+   * - DOM manipulation and measurements requiring full insertion
+   * - Focus management and accessibility setup
+   * - Third-party library integration requiring DOM in document
+   * - Setting up DOM event listeners
+   * - Animation initialization requiring layout
+   */
+  public afterMount?(): void | Promise<void>;
 
   /**
    * Lifecycle method - determines if component should update
    */
   public shouldUpdate?(nextProps: P, nextState: S): boolean;
 }
-export { PropTypes };
+
+export default PropTypes;

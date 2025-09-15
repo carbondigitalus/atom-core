@@ -1,3 +1,1 @@
-export type Source =
-  | { fileName?: string; lineNumber?: number; columnNumber?: number }
-  | undefined;
+export type Source = { fileName?: string; lineNumber?: number; columnNumber?: number } | undefined;

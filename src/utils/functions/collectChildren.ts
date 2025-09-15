@@ -2,9 +2,7 @@
 import { Children } from '../types/Children';
 import { Child } from '../types/Child';
 
-export function collectChildren(
-  input: Children
-): Array<Exclude<Child, false | null | undefined | Child[]>> {
+export function collectChildren(input: Children): Array<Exclude<Child, false | null | undefined | Child[]>> {
   const out: Array<Exclude<Child, false | null | undefined | Child[]>> = [];
 
   const enqueue = (c: Children): void => {

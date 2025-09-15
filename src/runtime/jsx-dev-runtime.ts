@@ -1,7 +1,7 @@
 // Custom Modules
 import { createElement } from '../core/createElement';
 import { collectChildren } from '../utils/functions/collectChildren';
-import { VNode } from '../utils/interfaces/VNode';
+import VNode from '../utils/interfaces/VNode';
 import { Children } from '../utils/types/Children';
 import { ElementType } from '../utils/types/ElementType';
 import { Key } from '../utils/types/Key';
@@ -32,15 +32,10 @@ export function jsxDEV<P = Props>(
   }
 
   // Remove children from props to avoid passing it twice
-  const { children: _dropChildren, ...withoutChildren } =
-    baseWithDev as unknown as Props & { children?: Children };
+  const { children: _dropChildren, ...withoutChildren } = baseWithDev as unknown as Props & { children?: Children };
   void _dropChildren;
 
   const flat = collectChildren(children);
 
-  return createElement<P>(
-    type,
-    withoutChildren as unknown as P & Props,
-    ...flat
-  );
+  return createElement<P>(type, withoutChildren as unknown as P & Props, ...flat);
 }

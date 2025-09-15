@@ -1,15 +1,12 @@
 // Custom Modules
-import { VNode } from '../utils/interfaces/VNode';
+import VNode from '../utils/interfaces/VNode';
 import { Child } from '../utils/types/Child';
 import { Children } from '../utils/types/Children';
 import { ElementType } from '../utils/types/ElementType';
 import { Key } from '../utils/types/Key';
 import { Props } from '../utils/types/Props';
 
-function normalizeChildren(
-  input: Children | undefined,
-  rest: Child[]
-): Children | undefined {
+function normalizeChildren(input: Children | undefined, rest: Child[]): Children | undefined {
   // If JSX transform passed children via props, prefer that, otherwise use rest args.
   if (input !== undefined) return input;
   return rest.length === 0 ? undefined : rest;
@@ -21,7 +18,10 @@ export function createElement<P = Props>(
   ...spreadChildren: Child[]
 ): VNode<P> {
   const base = rawProps ?? {};
-  const { key, children, ...rest } = base;
+  const { key, children, ...rest } = base as (P | Props) & {
+    key?: Key;
+    children?: Children;
+  };
 
   const finalChildren = normalizeChildren(children, spreadChildren);
 

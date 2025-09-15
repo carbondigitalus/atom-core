@@ -44,11 +44,7 @@ describe('createElement', () => {
     });
 
     it('should prefer children in props over spread children', () => {
-      const vnode = createElement(
-        'div',
-        { children: 'Props child' },
-        'Spread child'
-      );
+      const vnode = createElement('div', { children: 'Props child' }, 'Spread child');
 
       expect(vnode.props['children']).toBe('Props child');
     });

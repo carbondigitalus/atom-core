@@ -1,6 +1,7 @@
 import { describe, it, expect } from '@jest/globals';
 import { jsx, jsxs, Fragment } from '../../../src/runtime/jsx-runtime';
 import { createElement } from '../../../src/core/createElement';
+import { Children } from '@atomdev/core/utils/types/Children';
 
 describe('jsx-runtime', () => {
   describe('jsx', () => {
@@ -18,7 +19,7 @@ describe('jsx-runtime', () => {
 
     it('flattens nested/falsey children into a clean array', () => {
       const vnode = jsx('p', {
-        children: ['Hello', null, false, ['World', undefined]]
+        children: ['Hello', null, false, ['World', undefined]] as Children
       });
       const expected = createElement('p', {}, 'Hello', 'World');
       expect(vnode).toStrictEqual(expected);
@@ -45,7 +46,7 @@ describe('jsx-runtime', () => {
 
     it('flattens deeply nested arrays and removes null/false/undefined', () => {
       const vnode = jsxs('ul', {
-        children: [null, false, 'A', ['B', ['C', null], false], undefined, 'D']
+        children: [null, false, 'A', ['B', ['C', null], false], undefined, 'D'] as Children
       });
       const expected = createElement('ul', {}, 'A', 'B', 'C', 'D');
       expect(vnode).toStrictEqual(expected);

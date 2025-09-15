@@ -1,10 +1,7 @@
 // NPM Modules
 import { describe, it, expect } from '@jest/globals';
 
-import {
-  createElement as rootCreateElement,
-  render as rootRender
-} from '../../src';
+import { createElement as rootCreateElement, render as rootRender } from '../../src';
 import { createElement as directCreateElement } from '../../src/core/createElement';
 import { render as directRender } from '../../src/core/render';
 

@@ -4,9 +4,9 @@
 import { describe, test, expect } from '@jest/globals';
 
 // Custom Modules
+import { createDOMNode } from '@atomdev/core/core/dom/createDOMNode';
+import VNode from '@atomdev/core/utils/interfaces/VNode';
 import { AtomComponent } from '../../../src/core/Component';
-import { createDOMNode } from '../../../src/core/createDOMNode';
-import type { VNode } from '../../../src/utils/interfaces/VNode';
 
 type Empty = Record<string, never>;
 

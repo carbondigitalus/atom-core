@@ -1,4 +1,1 @@
-export type PropsWithChildren = { children?: string | string[] } & Record<
-  string,
-  unknown
->;
+export type PropsWithChildren = { children?: string | string[] } & Record<string, unknown>;

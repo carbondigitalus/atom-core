@@ -1,6 +1,7 @@
 import { describe, it, expect } from '@jest/globals';
 import { jsxDEV, Fragment } from '../../../src/runtime/jsx-dev-runtime';
 import { createElement } from '../../../src/core/createElement';
+import { Children } from '@atomdev/core/utils/types/Children';
 
 describe('jsxDEV-runtime', () => {
   it('creates VNode without children', () => {
@@ -15,37 +16,21 @@ describe('jsxDEV-runtime', () => {
 
   it('creates VNode with single string child', () => {
     const vnode = jsxDEV('span', { children: 'Hello' });
-    const expected = createElement(
-      'span',
-      { __source: undefined, __self: undefined },
-      'Hello'
-    );
+    const expected = createElement('span', { __source: undefined, __self: undefined }, 'Hello');
     expect(vnode).toStrictEqual(expected);
   });
 
   it('creates VNode with multiple children', () => {
     const vnode = jsxDEV('ul', { children: ['One', 'Two'] });
-    const expected = createElement(
-      'ul',
-      { __source: undefined, __self: undefined },
-      'One',
-      'Two'
-    );
+    const expected = createElement('ul', { __source: undefined, __self: undefined }, 'One', 'Two');
     expect(vnode).toStrictEqual(expected);
   });
 
   it('flattens nested arrays and filters falsey children', () => {
     const vnode = jsxDEV('ul', {
-      children: [null, false, 'A', ['B', ['C', null], undefined], 'D']
+      children: [null, false, 'A', ['B', ['C', null], undefined], 'D'] as Children
     });
-    const expected = createElement(
-      'ul',
-      { __source: undefined, __self: undefined },
-      'A',
-      'B',
-      'C',
-      'D'
-    );
+    const expected = createElement('ul', { __source: undefined, __self: undefined }, 'A', 'B', 'C', 'D');
     expect(vnode).toStrictEqual(expected);
   });
 
@@ -57,14 +42,7 @@ describe('jsxDEV-runtime', () => {
   it('attaches __source and __self', () => {
     const fakeSource = { fileName: 'test.tsx', lineNumber: 10 };
     const fakeSelf = { component: 'Test' };
-    const vnode = jsxDEV(
-      'div',
-      { children: 'Dev' },
-      undefined,
-      false,
-      fakeSource,
-      fakeSelf
-    );
+    const vnode = jsxDEV('div', { children: 'Dev' }, undefined, false, fakeSource, fakeSelf);
 
     const props = vnode.props as typeof vnode.props & {
       __source?: unknown;

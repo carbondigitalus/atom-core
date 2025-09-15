@@ -6,10 +6,11 @@
 import { describe, it, expect, jest } from '@jest/globals';
 
 // Custom Modules
+import { createDOMNode } from '@atomdev/core/core/dom/createDOMNode';
+import VNode from '@atomdev/core/utils/interfaces/VNode';
 import { Children } from '@atomdev/core/utils/types/Children';
-import { createDOMNode } from '../../../src/core/createDOMNode';
+
 import { Component } from '../../../src/utils/types/Component';
-import { VNode } from '../../../src/utils/interfaces/VNode';
 
 // Test component classes for class component tests
 class SimpleComponent extends Component<{ message: string }> {
