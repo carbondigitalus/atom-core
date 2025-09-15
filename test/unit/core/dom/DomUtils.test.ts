@@ -50,10 +50,7 @@ describe('DOMUtils', () => {
       const element = document.createElement('div');
 
       expect(() => executeRefCallback(refCallback, element)).not.toThrow();
-      expect(consoleErrorSpy).toHaveBeenCalledWith(
-        'Ref callback error:',
-        expect.any(Error)
-      );
+      expect(consoleErrorSpy).toHaveBeenCalledWith('Ref callback error:', expect.any(Error));
     });
   });
 
@@ -238,10 +235,7 @@ describe('DOMUtils', () => {
       };
 
       expect(() => applyPropsToElement(element, props)).not.toThrow();
-      expect(consoleErrorSpy).toHaveBeenCalledWith(
-        'Ref callback error:',
-        expect.any(Error)
-      );
+      expect(consoleErrorSpy).toHaveBeenCalledWith('Ref callback error:', expect.any(Error));
       expect(element.getAttribute('id')).toBe('test');
     });
   });
@@ -340,10 +334,7 @@ describe('DOMUtils', () => {
       attachComponentToNode(node, component);
 
       await expect(processAfterMountRecursively(node)).resolves.not.toThrow();
-      expect(consoleErrorSpy).toHaveBeenCalledWith(
-        'afterMount() error:',
-        expect.any(Error)
-      );
+      expect(consoleErrorSpy).toHaveBeenCalledWith('afterMount() error:', expect.any(Error));
 
       // Component reference should still be cleaned up
       const attachedNode = node as ComponentAttachedNode;
@@ -440,10 +431,7 @@ describe('DOMUtils', () => {
       attachComponentToNode(node, component);
 
       await expect(processAfterMountRecursively(node)).resolves.not.toThrow();
-      expect(consoleErrorSpy).toHaveBeenCalledWith(
-        'afterMount() error:',
-        expect.any(Error)
-      );
+      expect(consoleErrorSpy).toHaveBeenCalledWith('afterMount() error:', expect.any(Error));
     });
   });
 
