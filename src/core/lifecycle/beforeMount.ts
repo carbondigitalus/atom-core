@@ -6,9 +6,7 @@ import BeforeMountCapableComponent from '@atomdev/core/utils/interfaces/BeforeMo
  * @param component - The component instance with beforeMount capabilities
  * @returns void - beforeMount is always synchronous
  */
-export function executeBeforeMount(
-  component: BeforeMountCapableComponent
-): void {
+export function executeBeforeMount(component: BeforeMountCapableComponent): void {
   // Signal "we are mounting" so setState is allowed but non-scheduling
   if (typeof component.__enterMountPhase === 'function') {
     component.__enterMountPhase();
@@ -47,9 +45,7 @@ export function executeBeforeMount(
  * @param component - The component to validate
  * @returns boolean - true if component has proper beforeMount support
  */
-export function hasBeforeMountSupport(
-  component: unknown
-): component is BeforeMountCapableComponent {
+export function hasBeforeMountSupport(component: unknown): component is BeforeMountCapableComponent {
   if (typeof component !== 'object' || component === null) {
     return false;
   }
@@ -57,10 +53,7 @@ export function hasBeforeMountSupport(
   const comp = component as BeforeMountCapableComponent;
 
   // Must have at least the guard methods or the lifecycle method itself
-  return (
-    typeof comp.__canInvokeBeforeMount === 'function' ||
-    typeof comp.beforeMount === 'function'
-  );
+  return typeof comp.__canInvokeBeforeMount === 'function' || typeof comp.beforeMount === 'function';
 }
 
 /**
