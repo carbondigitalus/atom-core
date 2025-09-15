@@ -135,9 +135,7 @@ describe('didMount Lifecycle', () => {
       });
 
       it('should handle API call failures in async didMount', async () => {
-        const mockFetch = jest
-          .fn<typeof fetch>()
-          .mockRejectedValue(new Error('API Error'));
+        const mockFetch = jest.fn<typeof fetch>().mockRejectedValue(new Error('API Error'));
         global.fetch = mockFetch;
 
         mockComponent.didMount = jest.fn(async () => {
@@ -149,10 +147,7 @@ describe('didMount Lifecycle', () => {
         // Wait for async error to be caught
         await new Promise((resolve) => setTimeout(resolve, 10));
 
-        expect(consoleErrorSpy).toHaveBeenCalledWith(
-          'Async didMount() error:',
-          expect.any(Error)
-        );
+        expect(consoleErrorSpy).toHaveBeenCalledWith('Async didMount() error:', expect.any(Error));
       });
     });
 
@@ -183,9 +178,7 @@ describe('didMount Lifecycle', () => {
           disconnect: jest.fn()
         };
 
-        const mockIntersectionObserver = jest
-          .fn()
-          .mockImplementation(() => mockObserver);
+        const mockIntersectionObserver = jest.fn().mockImplementation(() => mockObserver);
         (global as any).IntersectionObserver = mockIntersectionObserver;
 
         const targetElement = document.createElement('div');
