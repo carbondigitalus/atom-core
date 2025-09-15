@@ -6,10 +6,7 @@ import { ElementType } from '../utils/types/ElementType';
 import { Key } from '../utils/types/Key';
 import { Props } from '../utils/types/Props';
 
-function normalizeChildren(
-  input: Children | undefined,
-  rest: Child[]
-): Children | undefined {
+function normalizeChildren(input: Children | undefined, rest: Child[]): Children | undefined {
   // If JSX transform passed children via props, prefer that, otherwise use rest args.
   if (input !== undefined) return input;
   return rest.length === 0 ? undefined : rest;
