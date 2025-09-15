@@ -1,6 +1,7 @@
 import { describe, it, expect } from '@jest/globals';
 import { jsxDEV, Fragment } from '../../../src/runtime/jsx-dev-runtime';
 import { createElement } from '../../../src/core/createElement';
+import { Children } from '@atomdev/core/utils/types/Children';
 
 describe('jsxDEV-runtime', () => {
   it('creates VNode without children', () => {
@@ -36,7 +37,13 @@ describe('jsxDEV-runtime', () => {
 
   it('flattens nested arrays and filters falsey children', () => {
     const vnode = jsxDEV('ul', {
-      children: [null, false, 'A', ['B', ['C', null], undefined], 'D']
+      children: [
+        null,
+        false,
+        'A',
+        ['B', ['C', null], undefined],
+        'D'
+      ] as Children
     });
     const expected = createElement(
       'ul',
