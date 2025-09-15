@@ -184,9 +184,7 @@ describe('afterMount Lifecycle', () => {
       });
 
       it('should display error states properly for failed API calls', async () => {
-        const mockFetch = jest
-          .fn<typeof fetch>()
-          .mockRejectedValue(new Error('Network error'));
+        const mockFetch = jest.fn<typeof fetch>().mockRejectedValue(new Error('Network error'));
         global.fetch = mockFetch as any;
 
         let errorState = null;
@@ -195,8 +193,7 @@ describe('afterMount Lifecycle', () => {
           try {
             await fetch('/api/failing-endpoint');
           } catch (error) {
-            errorState =
-              error instanceof Error ? error.message : 'Unknown error';
+            errorState = error instanceof Error ? error.message : 'Unknown error';
           }
         });
 
@@ -236,9 +233,7 @@ describe('afterMount Lifecycle', () => {
           disconnect: jest.fn()
         };
 
-        const mockIntersectionObserver = jest
-          .fn()
-          .mockImplementation(() => mockObserver) as jest.MockedClass<
+        const mockIntersectionObserver = jest.fn().mockImplementation(() => mockObserver) as jest.MockedClass<
           typeof IntersectionObserver
         >;
         global.IntersectionObserver = mockIntersectionObserver;
@@ -276,9 +271,7 @@ describe('afterMount Lifecycle', () => {
 
         const mockResizeObserverConstructor = jest
           .fn()
-          .mockImplementation(() => mockResizeObserver) as jest.MockedClass<
-          typeof ResizeObserver
-        >;
+          .mockImplementation(() => mockResizeObserver) as jest.MockedClass<typeof ResizeObserver>;
         global.ResizeObserver = mockResizeObserverConstructor;
 
         const element = document.createElement('div');
@@ -319,10 +312,7 @@ describe('afterMount Lifecycle', () => {
 
           // Setup scroll listener
           scrollContainer.addEventListener('scroll', () => {
-            localStorage.setItem(
-              'scrollPosition',
-              scrollContainer.scrollTop.toString()
-            );
+            localStorage.setItem('scrollPosition', scrollContainer.scrollTop.toString());
           });
         });
 
