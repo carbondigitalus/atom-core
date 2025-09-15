@@ -1,6 +1,6 @@
 // Custom Modules
 import PropTypes from '../utils/interfaces/PropTypes';
-import type VNode from '../utils/interfaces/VNode';
+import VNode from '../utils/interfaces/VNode';
 import type { Props } from '../utils/types/Props';
 
 interface TestInstance {
