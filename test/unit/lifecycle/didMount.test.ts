@@ -4,11 +4,7 @@
 import { expect, jest } from '@jest/globals';
 
 // Custom Modules
-import {
-  executeDidMount,
-  hasDidMountSupport,
-  safeExecuteDidMount
-} from '@atomdev/core/core/lifecycle/didMount';
+import { executeDidMount, hasDidMountSupport, safeExecuteDidMount } from '@atomdev/core/core/lifecycle/didMount';
 import DidMountCapableComponent from '@atomdev/core/utils/interfaces/DidMountCapableComponent';
 
 describe('didMount Lifecycle', () => {
@@ -69,11 +65,7 @@ describe('didMount Lifecycle', () => {
 
         executeDidMount(mockComponent);
 
-        expect(callOrder).toEqual([
-          'markDidMountCalled',
-          'didMount',
-          'markMounted'
-        ]);
+        expect(callOrder).toEqual(['markDidMountCalled', 'didMount', 'markMounted']);
       });
 
       it('should only execute if __canInvokeDidMount returns true', () => {
@@ -151,10 +143,7 @@ describe('didMount Lifecycle', () => {
 
         expect(() => executeDidMount(mockComponent)).not.toThrow();
 
-        expect(consoleErrorSpy).toHaveBeenCalledWith(
-          'didMount() error:',
-          expect.any(Error)
-        );
+        expect(consoleErrorSpy).toHaveBeenCalledWith('didMount() error:', expect.any(Error));
         expect(mockComponent.__markMounted).toHaveBeenCalled();
       });
 
@@ -165,10 +154,7 @@ describe('didMount Lifecycle', () => {
 
         expect(() => executeDidMount(mockComponent)).not.toThrow();
 
-        expect(consoleErrorSpy).toHaveBeenCalledWith(
-          'didMount() error:',
-          expect.any(Error)
-        );
+        expect(consoleErrorSpy).toHaveBeenCalledWith('didMount() error:', expect.any(Error));
         expect(mockComponent.__markMounted).toHaveBeenCalled();
       });
 
@@ -179,10 +165,7 @@ describe('didMount Lifecycle', () => {
 
         expect(() => executeDidMount(mockComponent)).not.toThrow();
 
-        expect(consoleErrorSpy).toHaveBeenCalledWith(
-          'didMount() error:',
-          expect.any(Error)
-        );
+        expect(consoleErrorSpy).toHaveBeenCalledWith('didMount() error:', expect.any(Error));
       });
 
       it('should handle errors in __canInvokeDidMount gracefully', () => {
@@ -192,10 +175,7 @@ describe('didMount Lifecycle', () => {
 
         expect(() => executeDidMount(mockComponent)).not.toThrow();
 
-        expect(consoleErrorSpy).toHaveBeenCalledWith(
-          'didMount() error:',
-          expect.any(Error)
-        );
+        expect(consoleErrorSpy).toHaveBeenCalledWith('didMount() error:', expect.any(Error));
         expect(mockComponent.__markMounted).toHaveBeenCalled();
       });
     });
@@ -231,10 +211,7 @@ describe('didMount Lifecycle', () => {
         // Wait for async error to be caught
         await new Promise((resolve) => setTimeout(resolve, 50));
 
-        expect(consoleErrorSpy).toHaveBeenCalledWith(
-          'Async didMount() error:',
-          expect.any(Error)
-        );
+        expect(consoleErrorSpy).toHaveBeenCalledWith('Async didMount() error:', expect.any(Error));
       });
 
       it('should not await async didMount return value', () => {
@@ -318,10 +295,7 @@ describe('didMount Lifecycle', () => {
       });
 
       expect(() => safeExecuteDidMount(mockComponent)).not.toThrow();
-      expect(consoleErrorSpy).toHaveBeenCalledWith(
-        'didMount() error:',
-        expect.any(Error)
-      );
+      expect(consoleErrorSpy).toHaveBeenCalledWith('didMount() error:', expect.any(Error));
     });
   });
 });
