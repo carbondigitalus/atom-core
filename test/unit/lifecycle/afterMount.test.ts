@@ -189,12 +189,10 @@ describe('afterMount Lifecycle', () => {
         let componentState = { count: 0, mounted: false };
         let rerenderTriggered = false;
 
-        const mockSetState = jest.fn(
-          (newState: Partial<typeof componentState>) => {
-            componentState = { ...componentState, ...newState };
-            rerenderTriggered = true;
-          }
-        );
+        const mockSetState = jest.fn((newState: Partial<typeof componentState>) => {
+          componentState = { ...componentState, ...newState };
+          rerenderTriggered = true;
+        });
 
         mockComponent.afterMount = jest.fn(() => {
           mockSetState({ count: 1, mounted: true });
@@ -211,11 +209,9 @@ describe('afterMount Lifecycle', () => {
       it('should handle async state updates correctly', async () => {
         let componentState = { loading: false, data: null };
 
-        const mockSetState = jest.fn(
-          (newState: Partial<typeof componentState>) => {
-            componentState = { ...componentState, ...newState };
-          }
-        );
+        const mockSetState = jest.fn((newState: Partial<typeof componentState>) => {
+          componentState = { ...componentState, ...newState };
+        });
 
         mockComponent.afterMount = jest.fn(async () => {
           mockSetState({ loading: true });
@@ -259,10 +255,7 @@ describe('afterMount Lifecycle', () => {
 
         await expect(executeAfterMount(mockComponent)).resolves.toBeUndefined();
 
-        expect(consoleErrorSpy).toHaveBeenCalledWith(
-          'afterMount() error:',
-          expect.any(Error)
-        );
+        expect(consoleErrorSpy).toHaveBeenCalledWith('afterMount() error:', expect.any(Error));
       });
 
       it('should handle errors in __markAfterMountCalled gracefully', async () => {
@@ -272,10 +265,7 @@ describe('afterMount Lifecycle', () => {
 
         await expect(executeAfterMount(mockComponent)).resolves.toBeUndefined();
 
-        expect(consoleErrorSpy).toHaveBeenCalledWith(
-          'afterMount() error:',
-          expect.any(Error)
-        );
+        expect(consoleErrorSpy).toHaveBeenCalledWith('afterMount() error:', expect.any(Error));
       });
 
       it('should handle errors in __canInvokeAfterMount gracefully', async () => {
@@ -285,10 +275,7 @@ describe('afterMount Lifecycle', () => {
 
         await expect(executeAfterMount(mockComponent)).resolves.toBeUndefined();
 
-        expect(consoleErrorSpy).toHaveBeenCalledWith(
-          'afterMount() error:',
-          expect.any(Error)
-        );
+        expect(consoleErrorSpy).toHaveBeenCalledWith('afterMount() error:', expect.any(Error));
       });
 
       it('should remain functional even if afterMount fails', async () => {
@@ -343,10 +330,7 @@ describe('afterMount Lifecycle', () => {
 
         await expect(executeAfterMount(mockComponent)).resolves.toBeUndefined();
 
-        expect(consoleErrorSpy).toHaveBeenCalledWith(
-          'afterMount() error:',
-          expect.any(Error)
-        );
+        expect(consoleErrorSpy).toHaveBeenCalledWith('afterMount() error:', expect.any(Error));
       });
     });
   });
@@ -398,9 +382,7 @@ describe('afterMount Lifecycle', () => {
     it('should not execute for unsupported components', async () => {
       const unsupportedComponent = { someMethod: () => {} };
 
-      await expect(
-        safeExecuteAfterMount(unsupportedComponent)
-      ).resolves.toBeUndefined();
+      await expect(safeExecuteAfterMount(unsupportedComponent)).resolves.toBeUndefined();
     });
 
     it('should not execute for null/undefined', async () => {
@@ -413,13 +395,8 @@ describe('afterMount Lifecycle', () => {
         throw new Error('Safe execute error');
       });
 
-      await expect(
-        safeExecuteAfterMount(mockComponent)
-      ).resolves.toBeUndefined();
-      expect(consoleErrorSpy).toHaveBeenCalledWith(
-        'afterMount() error:',
-        expect.any(Error)
-      );
+      await expect(safeExecuteAfterMount(mockComponent)).resolves.toBeUndefined();
+      expect(consoleErrorSpy).toHaveBeenCalledWith('afterMount() error:', expect.any(Error));
     });
   });
 
@@ -439,10 +416,7 @@ describe('afterMount Lifecycle', () => {
       const promise = executeAfterMountNonBlocking(mockComponent);
 
       await expect(promise).resolves.toBeUndefined();
-      expect(consoleErrorSpy).toHaveBeenCalledWith(
-        'afterMount() error:',
-        expect.any(Error)
-      );
+      expect(consoleErrorSpy).toHaveBeenCalledWith('afterMount() error:', expect.any(Error));
     });
   });
 
@@ -476,10 +450,7 @@ describe('afterMount Lifecycle', () => {
       const unsupportedComponent = { someMethod: () => {} };
 
       await expect(
-        batchExecuteAfterMount([
-          supportedComponent,
-          unsupportedComponent as AfterMountCapableComponent
-        ])
+        batchExecuteAfterMount([supportedComponent, unsupportedComponent as AfterMountCapableComponent])
       ).resolves.toBeUndefined();
 
       expect(supportedComponent.afterMount).toHaveBeenCalled();
@@ -500,10 +471,7 @@ describe('afterMount Lifecycle', () => {
 
       expect(workingComponent.afterMount).toHaveBeenCalled();
       expect(failingComponent.afterMount).toHaveBeenCalled();
-      expect(consoleErrorSpy).toHaveBeenCalledWith(
-        'afterMount() error:',
-        expect.any(Error)
-      );
+      expect(consoleErrorSpy).toHaveBeenCalledWith('afterMount() error:', expect.any(Error));
     });
   });
 
