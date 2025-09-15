@@ -2,9 +2,10 @@
 import { describe, test, expect } from '@jest/globals';
 
 // Custom Modules
-import { AtomComponent, PropTypes } from '@atomdev/core/core/Component';
-import { VNode } from '@atomdev/core/utils/interfaces/VNode';
+import PropTypes, { AtomComponent } from '@atomdev/core/core/Component';
+
 import { Props } from '@atomdev/core/utils/types/Props';
+import VNode from '@atomdev/core/utils/interfaces/VNode';
 
 // Test component implementations
 class TestComponent extends AtomComponent<Props, { count: number }> {
@@ -177,8 +178,9 @@ describe('AtomComponent Constructor', () => {
   describe('3. Method Binding', () => {
     test('Methods bound in constructor have correct this context', () => {
       const component = new TestComponentWithBinding({});
-      // Mock afterMount to allow setState
-      component.afterMount?.();
+
+      // Mark component as mounted so setState works
+      component.__markMounted();
 
       // Simulate the method being called in a different context
       // eslint-disable-next-line @typescript-eslint/unbound-method
@@ -190,8 +192,9 @@ describe('AtomComponent Constructor', () => {
 
     test('Arrow function methods work without explicit binding', () => {
       const component = new TestComponentWithArrowFunction({});
-      // Mock afterMount to allow setState
-      component.afterMount?.();
+
+      // Mark component as mounted so setState works
+      component.__markMounted();
 
       // Simulate the method being called in a different context
       const arrowMethod = component.handleClick;
@@ -204,7 +207,7 @@ describe('AtomComponent Constructor', () => {
       const component = new TestComponentWithBinding({});
 
       // Mock afterMount to allow setState
-      component.afterMount?.();
+      component.__markMounted();
 
       expect(component.state.count).toBe(0);
       component.handleClick();
@@ -215,7 +218,7 @@ describe('AtomComponent Constructor', () => {
       const component = new TestComponentWithArrowFunction({});
 
       // Mock afterMount to allow setState
-      component.afterMount?.();
+      component.__markMounted();
 
       expect(component.state.count).toBe(0);
       component.handleClick();
