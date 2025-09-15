@@ -6,7 +6,7 @@ import { describe, test, expect } from '@jest/globals';
 // Custom Modules
 import { render } from '@atomdev/core';
 import { AtomComponent } from '@atomdev/core/core/Component';
-import { VNode } from '@atomdev/core/utils/interfaces/VNode';
+import VNode from '@atomdev/core/utils/interfaces/VNode';
 
 type Empty = Record<string, never>;
 
