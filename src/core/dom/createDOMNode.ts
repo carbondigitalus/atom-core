@@ -1,11 +1,6 @@
 // Custom Modules
 import { AtomComponent } from '../Component';
-import {
-  applyPropsToElement,
-  createTextNode,
-  createElement,
-  attachComponentToNode
-} from '../dom/DOMUtils';
+import { applyPropsToElement, createTextNode, createElement, attachComponentToNode } from '../dom/DOMUtils';
 import { executeBeforeMount } from '../lifecycle/beforeMount';
 import { executeDidMount } from '../lifecycle/didMount';
 import AfterMountCapableComponent from '../../utils/interfaces/AfterMountCapableComponent';
@@ -20,9 +15,7 @@ import { PrimitiveChild } from '../../utils/types/PrimitiveChild';
 /**
  * Type guard for class component VNodes - more specific than generic VNode
  */
-function isClassComponentVNode(
-  x: unknown
-): x is VNode & { type: new (props: any) => AtomComponent<any, any> } {
+function isClassComponentVNode(x: unknown): x is VNode & { type: new (props: any) => AtomComponent<any, any> } {
   if (typeof x !== 'object' || x === null) return false;
 
   const maybe = x as { type?: unknown };
@@ -37,23 +30,16 @@ function isClassComponentVNode(
   if (typeof proto !== 'object' || proto === null) return false;
 
   const isAtom = proto instanceof AtomComponent;
-  const isLegacy =
-    typeof LegacyComponent === 'function' && proto instanceof LegacyComponent;
+  const isLegacy = typeof LegacyComponent === 'function' && proto instanceof LegacyComponent;
 
   // duck type: has a render() on prototype
-  const hasRender =
-    typeof (proto as { render?: unknown }).render === 'function';
+  const hasRender = typeof (proto as { render?: unknown }).render === 'function';
 
   return isAtom || isLegacy || hasRender;
 }
 
 function isIntrinsicVNode(x: unknown): x is IntrinsicVNode {
-  return (
-    typeof x === 'object' &&
-    x !== null &&
-    'type' in x &&
-    typeof (x as { type?: unknown }).type === 'string'
-  );
+  return typeof x === 'object' && x !== null && 'type' in x && typeof (x as { type?: unknown }).type === 'string';
 }
 
 function isPrimitive(x: unknown): x is PrimitiveChild {
@@ -84,9 +70,7 @@ function createDOMNode(element: Children): Node {
   // Intrinsic VNode (guaranteed string tag here)
   if (isIntrinsicVNode(element)) {
     const tagName = element.type as string;
-    const props = element.props as
-      | (Record<string, unknown> & { children?: Children })
-      | undefined;
+    const props = element.props as (Record<string, unknown> & { children?: Children }) | undefined;
 
     const domEl = createElement(tagName);
 
@@ -114,9 +98,7 @@ function createDOMNode(element: Children): Node {
   if (isClassComponentVNode(element)) {
     // Use any casting to bypass TypeScript inference issues
     const classElement = element as any;
-    const ComponentClass = classElement.type as new (
-      props: any
-    ) => AtomComponent<any, any>;
+    const ComponentClass = classElement.type as new (props: any) => AtomComponent<any, any>;
     const instance = new ComponentClass(classElement.props || {});
 
     // Execute beforeMount lifecycle using the dedicated module
