@@ -1,5 +1,5 @@
 // Custom Modules
-import { VNode } from '../interfaces/VNode';
+import VNode from '../interfaces/VNode';
 
 export abstract class Component<P = object, S = object> {
   props: P;
