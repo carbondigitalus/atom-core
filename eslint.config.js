@@ -6,12 +6,7 @@ import prettier from 'eslint-plugin-prettier';
 
 export default [
   {
-    ignores: [
-      'dist/**',
-      'node_modules/**',
-      'eslint.config.js',
-      'vite.config.ts'
-    ]
+    ignores: ['dist/**', 'node_modules/**', 'eslint.config.js', 'vite.config.ts']
   },
 
   // TypeScript files
@@ -42,7 +37,7 @@ export default [
     }
   },
 
-  // ✅ Type-aware linting for WDIO tests
+  // WebDriver Tests
   {
     files: ['test/browser/**/*.{ts,tsx}'],
     languageOptions: {
@@ -52,6 +47,13 @@ export default [
         tsconfigRootDir: import.meta.dirname,
         sourceType: 'module'
       }
+    }
+  },
+  // Jest Tests
+  {
+    files: ['test/integration/**/*.{ts,tsx}', 'test/unit/**/*.{ts,tsx}'],
+    rules: {
+      '@typescript-eslint/unbound-method': 'off'
     }
   },
 
